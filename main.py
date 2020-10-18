@@ -42,10 +42,7 @@ def main():
     while agent.deliberate() != -1:
         model.draw()
         time.sleep(0.3)
-        os.system('cls')
         
-   
-
-
+        
 if __name__ == '__main__':
     main()

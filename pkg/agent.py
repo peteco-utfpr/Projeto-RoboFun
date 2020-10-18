@@ -1,9 +1,15 @@
+import sys
+
+
 from model import Model
 from problem import Problem
 from state import State
 from cardinal import action
 from tree import TreeNode
 from lrta import Lrta
+
+sys.path.append('pkg/planner')
+from planner import Planner
 
 class Agent:
     """"""
@@ -60,9 +66,12 @@ class Agent:
         self.planToBegin = Lrta(9, 9, initial, initial, "begin")
         self.planToBegin.startManhattanHeuristic(self.prob.mazeBelief.walls)
 
-        self.libPlan = [self.planToGoal, self.planToBegin] 
+        self.libPlan = [self.planToGoal] 
         
-        self.plan = [self.planToGoal, self.planToBegin]
+        self.plan = [self.planToGoal]
+
+        plann = Planner()
+        print(plann.generate())
 
     def deliberate(self):
         # Primeira chamada, realiza busca para elaborar um plano
