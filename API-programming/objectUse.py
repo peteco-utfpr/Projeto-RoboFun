@@ -11,6 +11,8 @@ class ObjectUse:
         self.hasText = hasText
         self.fit = encaixe
         self.compatible = compativel
+        self.connectedFixed = []
+        self.connectedDinamic = []
       
         self.valueText = ""
         self.inputText = InputText(pos[0] + 30, pos[1] + 15, 30, 30, '1', True)
@@ -45,6 +47,24 @@ class ObjectUse:
 
     def getSize(self):
         return self.size
+
+    def addConnection(self, obj, fixed = True):
+        if fixed == True:
+             self.connectedFixed.append(obj)
+        else:
+            self.connectedDinamic.append(obj)
+
+    def deleteConnection(self, obj, fixed = True):
+        if fixed == True:
+             self.connectedFixed.remove(obj)
+        else:
+            self.connectedDinamic.remove(obj)
+        
+        
+            
+            
+        
+        
     
         
 

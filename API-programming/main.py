@@ -93,14 +93,35 @@ class Main:
                             posOb = objectClicked.getPos()
                             offset_x = posOb[0] - mouse_x
                             offset_y = posOb[1] - mouse_y
+                            offsets = []
+                            for i in objectClicked.connectedFixed:
+                                pos = i.getPos()
+                                offset_x_i = pos[0] - mouse_x
+                                offset_y_i = pos[1] - mouse_y
+                                offsets.append((offset_x_i, offset_y_i))
+                                
 
                 ##Verifica se o botao do mouse parou de ser clicado
                 elif event.type == pygame.MOUSEBUTTONUP and textWrite == False:
                         if event.button == 1:            
                             draging = False
+                            if objectClicked != False:
+                                for i in objectClicked.connectedDinamic:
+                                    i.connectedFixed.remove(objectClicked)
+                                objectClicked.connectedDinamic = []
                             
-                            if dist != 99999 and newPos != False:
+                            if dist != 99999 and newPos != False and objectClicked != False:
                                 print ("TENHO SUGESTÃO!")
+                                ##Verifica se o que esta sendo movido eh dependente do outro
+                                if orient == "S" or orient == "O":
+                                    print("DEPENDENTE 1")
+                                    objectClicked.addConnection(block, False)
+                                    block.addConnection(objectClicked, True)
+                                else:
+                                    print("DEPENDENTE 2")
+                                    objectClicked.addConnection(block, True)
+                                    block.addConnection(objectClicked, False)
+                                    
                                 self.window.fill(self.cor_branca)
                                 objectClicked.setPos(newPos)
                                 
@@ -109,6 +130,9 @@ class Main:
                     if draging:
                         mouse_x, mouse_y = event.pos
                         objectClicked.setPos((mouse_x + offset_x, mouse_y + offset_y))
+                        cont = 0
+                        for i in objectClicked.connectedFixed:
+                            i.setPos( (offsets[cont][0]+ mouse_x, offsets[cont][1]+ mouse_y))
 
                         #####SUGESTÃO DE ENCAIXEEE
                         dist = 99999
@@ -139,7 +163,7 @@ class Main:
                                                 typ = "L"
                                                 bl = i
                                                 np = (posStop[0] - sizeCarry[0], posStop[1])
-                                                print(distCalc)
+                                               
                                             elif j[0] == "O":
                                                 distCalc = abs(abs(posCarry[0] - posStop[0]) + abs(posCarry[1] - posStop[1]) - sizeStop[0])
                                                 typ = "O"
