@@ -63,14 +63,24 @@ class Main:
                     if newObject != False:
                         self.objects.append(newObject)
 
-
                 ##Deletar algum bloco
                 if event.type == pygame.KEYDOWN:
                     if event.key == K_DELETE and objectClicked != False:
                         self.objects.remove(objectClicked)
                         self.window.fill(self.cor_branca)
+                        for i in self.objects:
+                            for j in i.connectedFixed:
+                                if j[0] == objectClicked:
+                                    i.connectedFixed.remove(j)
+                                    break
+                                
+                            for j in i.connectedDinamic:
+                                if j[0] == objectClicked:
+                                    i.connectedDinamic.remove(j)
+                                
                         print("REMOVIDO!")
                         objectClicked = False
+                        
 
                 textWrite = False
                 for i in self.objects:
@@ -93,13 +103,6 @@ class Main:
                             posOb = objectClicked.getPos()
                             offset_x = posOb[0] - mouse_x
                             offset_y = posOb[1] - mouse_y
-                            offsets = []
-                            for i in objectClicked.connectedFixed:
-                                pos = i.getPos()
-                                offset_x_i = pos[0] - mouse_x
-                                offset_y_i = pos[1] - mouse_y
-                                offsets.append((offset_x_i, offset_y_i))
-                                
 
                 ##Verifica se o botao do mouse parou de ser clicado
                 elif event.type == pygame.MOUSEBUTTONUP and textWrite == False:
@@ -107,20 +110,24 @@ class Main:
                             draging = False
                             if objectClicked != False:
                                 for i in objectClicked.connectedDinamic:
-                                    i.connectedFixed.remove(objectClicked)
+                                    for j in i[0].connectedFixed:
+                                        if j[0] == objectClicked:
+                                            i[0].connectedFixed.remove(j)
+                                            break
+                                    
                                 objectClicked.connectedDinamic = []
                             
                             if dist != 99999 and newPos != False and objectClicked != False:
                                 print ("TENHO SUGESTÃO!")
                                 ##Verifica se o que esta sendo movido eh dependente do outro
-                                if orient == "S" or orient == "O":
+                                if orient == "N" or orient == "O":
                                     print("DEPENDENTE 1")
-                                    objectClicked.addConnection(block, False)
-                                    block.addConnection(objectClicked, True)
+                                    objectClicked.addConnection( [block, orient], False)
+                                    block.addConnection( [objectClicked, orient], True)
                                 else:
                                     print("DEPENDENTE 2")
-                                    objectClicked.addConnection(block, True)
-                                    block.addConnection(objectClicked, False)
+                                    objectClicked.addConnection([block , orient], True)
+                                    block.addConnection([objectClicked, orient], False)
                                     
                                 self.window.fill(self.cor_branca)
                                 objectClicked.setPos(newPos)
@@ -130,69 +137,78 @@ class Main:
                     if draging:
                         mouse_x, mouse_y = event.pos
                         objectClicked.setPos((mouse_x + offset_x, mouse_y + offset_y))
-                        cont = 0
-                        for i in objectClicked.connectedFixed:
-                            i.setPos( (offsets[cont][0]+ mouse_x, offsets[cont][1]+ mouse_y))
 
-                        #####SUGESTÃO DE ENCAIXEEE
+                        ## Gerando a sugestao de conexao
                         dist = 99999
                         orient = False
                         block = False
                         newPos = False
                         posCarry = objectClicked.getPos()
                         sizeCarry = objectClicked.getSize()
+                        ## Percorre todos os objetos presentes
                         for i in self.objects:
+                            connected = False
+                            ## Verifica se o objeto eh diferente do conectado
                             if i != objectClicked:
                                 posStop = i.getPos()
                                 sizeStop = i.getSize()
-                                for j in objectClicked.fit:
-                                    for k in i.compatible:
-                                        if j == k:                                                
-                                            if j[0] == "N":
-                                                distCalc = abs(abs(posCarry[0] - posStop[0]) + abs(posCarry[1] - posStop[1]) - sizeStop[1])
-                                                typ = "N"
-                                                bl = i
-                                                np = (posStop[0], posStop[1] + sizeStop[1])
-                                            elif j[0] == "S":
-                                                distCalc = abs(abs(posCarry[0] - posStop[0]) + abs(posCarry[1] - posStop[1]) - sizeCarry[1])
-                                                typ = "S"
-                                                bl = i
-                                                np = (posStop[0], posStop[1]-sizeCarry[1])
-                                            elif j[0] == "L":
-                                                distCalc = abs(abs(posCarry[0] - posStop[0] ) + abs(posCarry[1] - posStop[1]) - sizeCarry[0])
-                                                typ = "L"
-                                                bl = i
-                                                np = (posStop[0] - sizeCarry[0], posStop[1])
-                                               
-                                            elif j[0] == "O":
-                                                distCalc = abs(abs(posCarry[0] - posStop[0]) + abs(posCarry[1] - posStop[1]) - sizeStop[0])
-                                                typ = "O"
-                                                bl = i
-                                                np = (posStop[0] + sizeStop[0], posStop[1])
-                                            if distCalc < dist:
-                                                dist = distCalc
-                                                orient = typ
-                                                block = bl
-                                                newPos = np
-                                                
-          
-                        
-                        if dist > 10:
-                            dist = 99999
-                            orient = False
-                            block = False
-                            newPos = False
-            ######
-      
-                        
-                        
 
+
+                                for l in objectClicked.connectedFixed:
+                                    ## Se o objeto que esta sendo percorrido ja esta conectado
+                                    if i == l[0]:
+                                        connected = True
+                                        break
+                                ## Se ja estiver conectado, ignora esse bloco e parte para o proximo
+                                if connected == False:
+                                    ##Caso nao esteja conectado ainda
+                                    ## Percorre todas as possibilidades que o objeto clicado fornece de encaixe
+                                    for j in objectClicked.fit:
+                                        ## Percorre todas as possibilidaes de encaixe do objeto que esta sendo percorrido pelo for
+                                        for k in i.compatible:
+                                            ## Se for compativel (o encaixe com o recebimento)
+                                            if j == k:
+                                                ##Verifica em qual das posicoes ele se encaixa, e calcula assim a distancia ate o encaixe
+                                                if j[0] == "N":
+                                                    distCalc = abs(abs(posCarry[0] - posStop[0]) + abs(posCarry[1] - posStop[1]) - sizeStop[1])
+                                                    typ = "N"
+                                                    bl = i
+                                                    np = (posStop[0], posStop[1] + sizeStop[1])
+                                                elif j[0] == "S":
+                                                    distCalc = abs(abs(posCarry[0] - posStop[0]) + abs(posCarry[1] - posStop[1]) - sizeCarry[1])
+                                                    typ = "S"
+                                                    bl = i
+                                                    np = (posStop[0], posStop[1]-sizeCarry[1])
+                                                elif j[0] == "L":
+                                                    distCalc = abs(abs(posCarry[0] - posStop[0] ) + abs(posCarry[1] - posStop[1]) - sizeCarry[0])
+                                                    typ = "L"
+                                                    bl = i
+                                                    np = (posStop[0] - sizeCarry[0], posStop[1])  
+                                                elif j[0] == "O":
+                                                    distCalc = abs(abs(posCarry[0] - posStop[0]) + abs(posCarry[1] - posStop[1]) - sizeStop[0])
+                                                    typ = "O"
+                                                    bl = i
+                                                    np = (posStop[0] + sizeStop[0], posStop[1])
+
+                                                ## Salva os dados se a distancia encontrada for a menor
+                                                if distCalc < dist:
+                                                    dist = distCalc
+                                                    orient = typ
+                                                    block = bl
+                                                    newPos = np
+                                                    
+              
+                            ## Compara a menor distância encontrada com um limiar (no caso, 10). Se for menor, ira sugerir como opcao para conexao
+                            if dist > 10:
+                                dist = 99999
+                                orient = False
+                                block = False
+                                newPos = False
+                ######
+      
                 if event.type == pygame.QUIT: ## Verifica se o usuario clicou no X vermelho para fechar
                     pygame.quit()
                     stop = True
-
-                        
-     
-               
+                                   
 main = Main()
 main.run()
