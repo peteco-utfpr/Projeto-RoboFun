@@ -2,14 +2,15 @@ from action import Action
 from functions import Functions
 from mathClass import Math
 from variables import Variables
-
+from bounds import Bounds
 class Menu:
     def __init__(self):
+        self.bounds = Bounds()
         self.action = Action()
         self.loop = Functions()
         self.math = Math()
         self.variables = Variables()
-        self.buttons = [self.action, self.loop, self.math, self.variables]
+        self.buttons = [self.bounds, self.action, self.loop, self.math, self.variables]
         self.buttonActive = False
         
 

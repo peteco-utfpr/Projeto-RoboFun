@@ -29,7 +29,7 @@ class Button:
     def mouseClick(self, tela, mousePos):
         if mousePos[0] >= 0 and mousePos[0] <= self.sizeButton[0]:
             if mousePos[1] >= self.pos[1] and mousePos[1] <= self.pos[1] + self.sizeButton[1]:
-                pygame.draw.rect(tela, (211,211,211), [100, 0, 200, 500])
+                pygame.draw.rect(tela, (211,211,211), [100, 0, 400, 600])
                 for i in self.things:
                     i.show(tela)
                 return True

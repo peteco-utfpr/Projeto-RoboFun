@@ -2,7 +2,7 @@ import pygame, os
 from inputText import InputText 
 
 class ObjectUse:
-    def __init__(self, image, tam, pos, encaixe = [], compativel = [], hasText=False, onlyNumbers = False, typ = "None", posText = False):
+    def __init__(self, image, tam, pos, encaixe = [], compativel = [], hasText=False, onlyNumbers = False, typ = "None", posTextAjuste = (0,0)):
         
         self.ima = image
         self.image = pygame.image.load(os.path.join("images", "passivos", image)).convert_alpha()
@@ -26,8 +26,13 @@ class ObjectUse:
         self.connectedDinamic = []
 
         ## Possivel entrada de texto (do teclado)
+        
+        self.posText = [pos[0] + self.size[0]/2 - 10 + posTextAjuste[0], pos[1] + self.size[1]/2 - 15 + posTextAjuste[1]]
+        
+        
         self.valueText = ""
-        self.inputText = InputText(pos[0] + self.size[0]/2 - 10, pos[1] + self.size[1]/2 - 15, 30, 30, '1', onlyNumbers)
+        self.offsetPosText = (self.pos[0] -  self.posText[0], self.pos[1] -  self.posText[1])
+        self.inputText = InputText(self.posText[0], self.posText[1], 30, 30, '1', onlyNumbers)
 
         self.active = False
     ## Verifica se o mouse clicou sobre o bloco, caso sim, retorna o proprio objeto
@@ -59,7 +64,7 @@ class ObjectUse:
     ## Seta a bloco para uma posicao, e reposiciona os blocos fixos dele cascateamente
     def setPos(self, pos, ajusteVisual):
         self.pos = pos
-        self.inputText.setPos((pos[0] + self.size[0]/2 - 10, pos[1] + self.size[1]/2 - 15))## = InputText(pos[0] + 30, pos[1] + 15, 30, 30, self.inputText.getText(), True)
+        self.inputText.setPos((pos[0] - self.offsetPosText[0], pos[1] - self.offsetPosText[1]))## = InputText(pos[0] + 30, pos[1] + 15, 30, 30, self.inputText.getText(), True)
         for i in self.connectedFixed:
             if i[1] == "O" or i[1] == "L":
                 newPos = (self.pos[0] + self.size[0] - ajusteVisual , self.pos[1])
@@ -67,6 +72,37 @@ class ObjectUse:
             elif i[1] == "S" or i[1] == "N":
                 newPos = (self.pos[0], self.pos[1]+ self.size[1] - ajusteVisual)
                 i[0].setPos(newPos, ajusteVisual)
+            elif i[1] == "I1-op":
+                newPos = (self.pos[0]+ 23, self.pos[1] + 13)
+                i[0].setPos(newPos, ajusteVisual)
+            elif i[1] == "I2-op":
+                newPos = (self.pos[0] + 163, self.pos[1] + 13)
+                i[0].setPos(newPos, ajusteVisual)
+            elif i[1] == "I1-en":
+                newPos = (self.pos[0] + 143, self.pos[1] + 15)
+                i[0].setPos(newPos, ajusteVisual)
+            elif i[1] == "I2-en":
+                newPos = (self.pos[0] + 283, self.pos[1] + 15)
+                i[0].setPos(newPos, ajusteVisual)
+            elif i[1] == "A-en":
+                newPos = (self.pos[0] + 93, self.pos[1] + 74)
+                i[0].setPos(newPos, ajusteVisual)
+            elif i[1] == "I1-se":
+                newPos = (self.pos[0]+ 58, self.pos[1] + 12)
+                i[0].setPos(newPos, ajusteVisual)
+            elif i[1] == "I2-se":
+                newPos = (self.pos[0] + 193, self.pos[1] + 12)
+                i[0].setPos(newPos, ajusteVisual)
+            elif i[1] == "A-se":
+                newPos = (self.pos[0] + 93, self.pos[1] + 74)
+                i[0].setPos(newPos, ajusteVisual)
+            elif i[1] == "A-senao":
+                newPos = (self.pos[0] + 93, self.pos[1] + 24)
+                i[0].setPos(newPos, ajusteVisual)
+            
+                
+                
+                
 
     ## Retorna a posicao
     def getPos(self):

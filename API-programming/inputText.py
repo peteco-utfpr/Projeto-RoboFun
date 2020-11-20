@@ -65,8 +65,8 @@ class InputText:
         return self.text
 
     def setPos(self, pos):
-         self.rect.x = pos[0]
-         self.rect.y = pos[1]
+         self.rect.x = int(pos[0])
+         self.rect.y = int(pos[1])
         
 
 

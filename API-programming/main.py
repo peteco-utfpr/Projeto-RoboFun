@@ -10,8 +10,8 @@ class Main:
     def __init__(self):
         pygame.init() 
         ## Define o tamanho da tela
-        self.largura = 700
-        self.altura = 500
+        self.largura = 1200
+        self.altura = 600
 
         self.window = pygame.display.set_mode((self.largura, self.altura)) ##Cria uma tela.. X e Y
         pygame.display.set_caption("Block Program")##Nomeia a Janela
@@ -121,7 +121,7 @@ class Main:
                             if dist != 99999 and newPos != False and objectClicked != False:
                                 print ("TENHO SUGESTÃO!")
                                 ##Verifica se o que esta sendo movido eh dependente do outro
-                                if orient == "N" or orient == "O":
+                                if orient == "N" or orient == "O" or orient == "I1-op" or orient == "I2-op" or orient == "I1-en" or orient == "I2-en" or orient == "A-en" or orient == "I1-se" or orient == "I2-se" or orient == "A-se" or orient == "A-senao":
                                     print("DEPENDENTE 1")
                                     objectClicked.addConnection( [block, orient], False)
                                     block.addConnection( [objectClicked, orient], True)
@@ -141,6 +141,7 @@ class Main:
 
                         ## Gerando a sugestao de conexao
                         dist = 99999
+                        distCalc = 999999
                         orient = False
                         block = False
                         newPos = False
@@ -169,12 +170,75 @@ class Main:
                                         for k in i.compatible:
                                             ## Se for compativel (o encaixe com o recebimento)
                                             if j == k:
-                                                
-                                                    
-                                                    
+                                               
+                                                ## Verifica se eh do tipo operacao
+                                                if i.typeBlock == "operacao" and j == ("I", "macho-normal"):
 
+                                                    distCalc1 = abs(abs(posCarry[0] - posStop[0]-23) + abs(posCarry[1] - posStop[1] - 13))
+                                                    bl = i
+                                                    distCalc2 = abs(abs(posCarry[0] - posStop[0]-163) + abs(posCarry[1] - posStop[1] - 13) )                                            
+                                                    if distCalc1 < distCalc2:
+                                                        distCalc = distCalc1
+                                                        np = (posStop[0] + 23, posStop[1] + 13)
+                                                        typ = "I1-op"
+                                                    else:
+                                                        np = (posStop[0] + 163, posStop[1] + 13)
+                                                        typ = "I2-op"
+                                                        distCalc = distCalc2
+                                                elif i.typeBlock == "enquanto" and j == ("I", "macho-normal"):
+                                                    distCalc1 = abs(abs(posCarry[0] - posStop[0]-143) + abs(posCarry[1] - posStop[1] - 13))
+                                                    bl = i
+                                                    distCalc2 = abs(abs(posCarry[0] - posStop[0]-283) + abs(posCarry[1] - posStop[1] - 13))
+                                                    
+                                                    if distCalc1 < distCalc2:
+                                                        distCalc = distCalc1
+                                                        np = (posStop[0] + 143, posStop[1] + 15)
+                                                        typ = "I1-en"
+                                                    else:
+                                                        np = (posStop[0] + 283, posStop[1] + 15)
+                                                        typ = "I2-en"
+                                                        distCalc = distCalc2
+                                                elif i.typeBlock == "enquanto" and j == ("N", "femea-normal"):
+                                                    
+                                                    distCalc = abs(abs(posCarry[0] - posStop[0]-91) + abs(posCarry[1] - posStop[1] - 74))
+                                                    bl = i
+                                                    np = (posStop[0]+ 93, posStop[1] + 74)
+                                                    typ = "A-en"
+
+                                                elif i.typeBlock == "se" and j == ("I", "macho-normal"):
+
+                                                    distCalc1 = abs(abs(posCarry[0] - posStop[0] - 58) + abs(posCarry[1] - posStop[1] - 12))
+                                                   
+                                                    bl = i
+                                                    distCalc2 = abs(abs(posCarry[0] - posStop[0]-193) + abs(posCarry[1] - posStop[1] - 12) )
+
+            
+                                                    if distCalc1 < distCalc2:
+                                                        distCalc = distCalc1
+                                                        np = (posStop[0] + 58, posStop[1] + 12)
+                                                        typ = "I1-se"
+                                                    else:
+                                                        np = (posStop[0] + 193, posStop[1] + 13)
+                                                        typ = "I2-se"
+                                                        distCalc = distCalc2
+                                                
+                                                elif i.typeBlock == "se" and j == ("N", "femea-normal"):
+                                                    
+                                                    distCalc = abs(abs(posCarry[0] - posStop[0]-91) + abs(posCarry[1] - posStop[1] - 74))
+                                                    
+                                                    bl = i
+                                                    np = (posStop[0]+ 93, posStop[1] + 74)
+                                                    typ = "A-se"
+                                                    
+                                                elif i.typeBlock == "senao" and j == ("N", "femea-normal"):
+                        
+                                                    distCalc = abs(abs(posCarry[0] - posStop[0]-91) + abs(posCarry[1] - posStop[1] - 24))
+                                                    bl = i
+                                                    np = (posStop[0]+ 93, posStop[1] + 24)
+                                                    typ = "A-senao"
+                                                    
                                                 ##Verifica em qual das posicoes ele se encaixa, e calcula assim a distancia ate o encaixe
-                                                if j[0] == "N":
+                                                elif j[0] == "N":
                                                     distCalc = abs(abs(posCarry[0] - posStop[0]) + abs(posCarry[1] - posStop[1]) - sizeStop[1])
                                                     typ = "N"
                                                     bl = i
@@ -219,7 +283,7 @@ class Main:
                                                     
               
                             ## Compara a menor distância encontrada com um limiar (no caso, 10). Se for menor, ira sugerir como opcao para conexao
-                            if dist > 10:
+                            if dist > 20:
                                 dist = 99999
                                 orient = False
                                 block = False
