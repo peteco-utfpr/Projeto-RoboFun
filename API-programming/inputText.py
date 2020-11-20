@@ -1,21 +1,23 @@
 import pygame
 
 pygame.init()
-COLOR_INACTIVE = (169,169,169)
+COLOR_INACTIVE = (211,211,211)
 COLOR_ACTIVE = (255,255,255)
  
 FONT = pygame.font.SysFont(None, 25)
 
 
 class InputText:
-    def __init__(self, x, y, w, h, text='1', onlyNumbers = False):
+    def __init__(self, x, y, w, h, text='1', onlyNumbers = False, qtdMax = 3):
         self.rect = pygame.Rect(x, y, w, h)
+
         self.color = COLOR_INACTIVE
         self.text = text
         self.txt_surface = FONT.render(text, True, (0,0,0))
         self.active = False
         self.onlyNumbers = onlyNumbers
         self.numbers = "0123456789"
+        self.maxCar = qtdMax
 
     def handle_event(self, event):
         result = False
@@ -39,7 +41,7 @@ class InputText:
                     self.text = self.text[:-1]
                 else:
                     if self.onlyNumbers == True:
-                        if event.unicode in self.numbers:
+                        if event.unicode in self.numbers and len(self.text) < self.maxCar:
                             self.text += event.unicode
                     else:
                         self.text += event.unicode
@@ -50,7 +52,7 @@ class InputText:
 
     def update(self):
         # Resize the box if the text is too long.
-        width = max(15, self.txt_surface.get_width()+10)
+        width = max(35, self.txt_surface.get_width()+10)
         self.rect.w = width
 
     def show(self, screen):
@@ -61,6 +63,11 @@ class InputText:
 
     def getText(self):
         return self.text
+
+    def setPos(self, pos):
+         self.rect.x = pos[0]
+         self.rect.y = pos[1]
+        
 
 
 ##

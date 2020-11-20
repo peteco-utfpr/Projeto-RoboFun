@@ -26,6 +26,7 @@ class Main:
         ##Uma lista que armazena todos os blocos inseridos para a programação
         self.objects = []
 
+        self.ajusteVisual = 12
 
     ##Metodo usado para a execucao do programa
     def run(self):
@@ -130,13 +131,13 @@ class Main:
                                     block.addConnection([objectClicked, orient], False)
                                     
                                 self.window.fill(self.cor_branca)
-                                objectClicked.setPos(newPos)
+                                objectClicked.setPos(newPos, self.ajusteVisual)
                                 
                 ##Durante o momento de arrastar o mouse com o objeto selecionado 
                 elif event.type == pygame.MOUSEMOTION and textWrite == False:
                     if draging:
                         mouse_x, mouse_y = event.pos
-                        objectClicked.setPos((mouse_x + offset_x, mouse_y + offset_y))
+                        objectClicked.setPos((mouse_x + offset_x, mouse_y + offset_y), self.ajusteVisual)
 
                         ## Gerando a sugestao de conexao
                         dist = 99999
@@ -168,30 +169,49 @@ class Main:
                                         for k in i.compatible:
                                             ## Se for compativel (o encaixe com o recebimento)
                                             if j == k:
+                                                
+                                                    
+                                                    
+
                                                 ##Verifica em qual das posicoes ele se encaixa, e calcula assim a distancia ate o encaixe
                                                 if j[0] == "N":
                                                     distCalc = abs(abs(posCarry[0] - posStop[0]) + abs(posCarry[1] - posStop[1]) - sizeStop[1])
                                                     typ = "N"
                                                     bl = i
-                                                    np = (posStop[0], posStop[1] + sizeStop[1])
+                                                    np = (posStop[0], posStop[1] + sizeStop[1] - self.ajusteVisual)
+                                                    
                                                 elif j[0] == "S":
                                                     distCalc = abs(abs(posCarry[0] - posStop[0]) + abs(posCarry[1] - posStop[1]) - sizeCarry[1])
                                                     typ = "S"
                                                     bl = i
-                                                    np = (posStop[0], posStop[1]-sizeCarry[1])
+                                                    np = (posStop[0], posStop[1]-sizeCarry[1] + self.ajusteVisual)
+                                                  
                                                 elif j[0] == "L":
                                                     distCalc = abs(abs(posCarry[0] - posStop[0] ) + abs(posCarry[1] - posStop[1]) - sizeCarry[0])
                                                     typ = "L"
                                                     bl = i
-                                                    np = (posStop[0] - sizeCarry[0], posStop[1])  
+                                                    np = (posStop[0] - sizeCarry[0] + self.ajusteVisual, posStop[1])  
                                                 elif j[0] == "O":
                                                     distCalc = abs(abs(posCarry[0] - posStop[0]) + abs(posCarry[1] - posStop[1]) - sizeStop[0])
                                                     typ = "O"
                                                     bl = i
-                                                    np = (posStop[0] + sizeStop[0], posStop[1])
+                                                    np = (posStop[0] + sizeStop[0] - self.ajusteVisual, posStop[1])
 
                                                 ## Salva os dados se a distancia encontrada for a menor
                                                 if distCalc < dist:
+                                                    ## Quando os objetos tem o mesmo tamanho, as distancias N e S são iguais. Entao usamos esse ajuste
+                                                    ## para saber se a imagem deve se posicionar acima ou abaixo
+                                                    if typ == "N" or typ == "S" and orient == "N" or orient == "S":
+                                                        distCalcSigned = posCarry[1] - posStop[1]
+                                                        if distCalcSigned < 0:
+                                                            typ = "S"
+                                                            np = (posStop[0], posStop[1]-sizeCarry[1] + self.ajusteVisual)
+                                                        else:
+                                                            typ = "N"
+                                                            np = (posStop[0], posStop[1]+sizeStop[1] - self.ajusteVisual)
+                                                            
+
+                                                
                                                     dist = distCalc
                                                     orient = typ
                                                     block = bl

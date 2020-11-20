@@ -20,10 +20,10 @@ class Button:
                 
                 
     def show(self, tela):
-        font = pygame.font.SysFont(None, 30)
-        pygame.draw.rect(tela, self.color, [self.pos[0], self.pos[1]+10, self.sizeRect[0], self.sizeRect[1]])
+        font = pygame.font.SysFont(None, 21)
+        pygame.draw.rect(tela, self.color, [self.pos[0], self.pos[1]+5, self.sizeRect[0], self.sizeRect[1]])
         text = font.render(self.name, True, (0,0,0))
-        tela.blit(text, [self.pos[0]+25, self.pos[1]+20])
+        tela.blit(text, [self.pos[0]+12, self.pos[1]+18])
 
 
     def mouseClick(self, tela, mousePos):

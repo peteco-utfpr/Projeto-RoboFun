@@ -1,13 +1,15 @@
 from action import Action
-from loop import Loop
+from functions import Functions
 from mathClass import Math
+from variables import Variables
 
 class Menu:
     def __init__(self):
         self.action = Action()
-        self.loop = Loop()
+        self.loop = Functions()
         self.math = Math()
-        self.buttons = [self.action, self.loop, self.math]
+        self.variables = Variables()
+        self.buttons = [self.action, self.loop, self.math, self.variables]
         self.buttonActive = False
         
 
