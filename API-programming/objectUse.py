@@ -11,6 +11,10 @@ class ObjectUse:
         self.imageActive = pygame.image.load(os.path.join("images", "active", image)).convert_alpha()
         self.imageActive = pygame.transform.scale(self.imageActive, (int(tam[0]), int(tam[1])))
 
+    
+        self.imageSuggestion = pygame.image.load(os.path.join("images", "suggestion", image)).convert_alpha()
+        self.imageSuggestion = pygame.transform.scale(self.imageSuggestion, (int(tam[0]), int(tam[1])))
+
         self.size = tam
         self.pos = pos
         self.hasText = hasText
@@ -105,9 +109,11 @@ class ObjectUse:
                 
 
     ## Retorna a posicao
+    def getPosInversed(self):
+        return (self.pos[1], self.pos[0])
+
     def getPos(self):
         return self.pos
-
     ## Retorna o tamanho
     def getSize(self):
         return self.size
@@ -124,7 +130,16 @@ class ObjectUse:
              self.connectedFixed.remove(obj)
         else:
             self.connectedDinamic.remove(obj)
+
+    def drawSuggestion(self, pos, tela):
+        tela.blit(self.imageSuggestion, pos)
+
+    def getType(self):
+        return self.typeBlock
         
+
+    def getText(self):
+        return self.inputText.getText()
         
             
             

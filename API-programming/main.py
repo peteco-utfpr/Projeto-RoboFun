@@ -1,7 +1,8 @@
-import pygame, time, math, sys
+import pygame, time, math, sys, os
 from random import *
 from pygame.locals import *
 from menu import Menu
+from objectUse import ObjectUse
 ##Inspiracao
 ##https://developers.google.com/blockly/
 
@@ -25,10 +26,121 @@ class Main:
         self.menu = Menu()
         ##Uma lista que armazena todos os blocos inseridos para a programação
         self.objects = []
-
         self.ajusteVisual = 12
 
-    ##Metodo usado para a execucao do programa
+
+    def generateCode(self):
+         print ("Hora de gerar o Código!")
+         blocosOrdenados = sorted(self.objects, key = ObjectUse.getPosInversed)
+         codigoPython = ""
+         cont = 0
+         ident = 0
+         blockIdent = []
+         anterior = False
+         
+         while cont < len(blocosOrdenados):
+
+
+             
+             if anterior != False:
+                 noConnection = True
+                 for i in anterior.connectedFixed:
+                     if i[0] == blocosOrdenados[cont]:
+                         noConnection = False
+                         print ("Conectado: ", blocosOrdenados[cont].getType())
+                 
+                 
+                 if noConnection == True:
+                     ##print("Nao ta conectado com o de cima")
+                     minimo = 100000
+                     aliged = False
+                     valueIde = 0
+                     valueCont = 0
+                     for i in blockIdent:
+                         distIdent = abs(i.getPos()[0] - blocosOrdenados[cont].getPos()[0])
+                         if distIdent < minimo:
+                             minimo = distIdent
+                             aliged = i
+                             valueIde = valueCont
+                         valueCont += 1
+                     aux = 0
+                     listAux = []
+                     while aux < valueIde:
+                         listAux.append(blockIdent[aux])
+                         aux += 1
+                     ident = valueIde
+                     ##print("O bloco: ", blocosOrdenados[cont].getType(), " está identado ", valueIde)
+                         
+         
+             print("Ident: ", ident)       
+             anterior = blocosOrdenados[cont]
+             if blocosOrdenados[cont].getType() == "se":
+                 operador = blocosOrdenados[cont].getText()
+                 cont += 1
+                 value1 = blocosOrdenados[cont].getText()
+                 cont += 1
+                 value2 = blocosOrdenados[cont].getText()
+                 
+                 codigoPython += "\n" + ident*" " + "if " + value1 + " " + operador + " " + value2 + ":"
+                 ident += 1
+                 blockIdent.append(blocosOrdenados[cont-2])
+
+             elif blocosOrdenados[cont].getType() == "senao":
+                 codigoPython += "\nelse:"
+                 ident += 1
+                 blockIdent.append(blocosOrdenados[cont])
+                 
+             
+             elif blocosOrdenados[cont].getType() == "mover":
+                 cont += 1
+                 value1 = blocosOrdenados[cont].getText()
+                 codigoPython += "\n" + ident*" " +"mover(" + value1 + ")"
+                
+             elif blocosOrdenados[cont].getType() == "girarAnti":
+                 cont += 1
+                 value1 = blocosOrdenados[cont].getText()
+                 codigoPython += "\n" + ident*" " +"girarAntihorario(" + value1 + ")"
+
+             elif blocosOrdenados[cont].getType() == "girarHor":
+                 cont += 1
+                 value1 = blocosOrdenados[cont].getText()
+                 codigoPython += "\n" + ident*" " +"girarHorario(" + value1 + ")"
+
+             elif blocosOrdenados[cont].getType() == "enquanto":
+                 
+                 operador = blocosOrdenados[cont].getText()
+                 cont += 1
+                 value1 = blocosOrdenados[cont].getText()
+                 cont += 1
+                 value2 = blocosOrdenados[cont].getText()
+                 
+                 codigoPython += "\n" + ident*" " +"while " + value1 + " " + operador + " " + value2 + ":"
+                 ident += 1
+                 blockIdent.append(blocosOrdenados[cont-2])
+
+             elif blocosOrdenados[cont].getType() == "criarVariavel":
+                 cont += 1
+                 value1 = blocosOrdenados[cont].getText()
+                 codigoPython += "\n" + ident*" " + value1 + " = 0" 
+
+             elif blocosOrdenados[cont].getType() == "setarVariavel":
+                 
+                 variavel = blocosOrdenados[cont].getText()
+                 cont += 1
+                 value1 = blocosOrdenados[cont].getText()
+                 codigoPython += "\n" + ident*" "+ variavel + " = " + value1
+             
+             cont += 1
+             
+         
+         print("-----------------------------")
+         print (codigoPython)
+
+            
+
+         ##Ordenar pela posicao em Y, e como "desempate", o Y
+         
+    ##Metodo usado para a execucao do programa0
     def run(self):
         ##Variavel usada para verificar se um bloco esta sendo carregado
         draging = False
@@ -39,6 +151,7 @@ class Main:
         block = False
         newPos = False
         while not stop:
+           
             ##Desenha o retangulo cinza que contem o menu lateral
             pygame.draw.rect(self.tela, (192,192,192), [0, 0, 100, self.altura])
             ##Mostra os botoes do menu
@@ -50,18 +163,26 @@ class Main:
             pygame.display.update()
             for i in self.objects:
                 i.show(self.tela)
+            
                 
             for event in pygame.event.get():
             
                 ##Verifica se o um bloco foi clicado para ser adicionado a tela de programacao
                 if event.type == pygame.MOUSEBUTTONDOWN or pygame.mouse.get_pressed()[0] != 0:
                     buttonClicked, newObject = self.menu.mouseClick(self.tela, pygame.mouse.get_pos())
+
                     
                     ##Se foi clicado, apaga o menu lateral que abriu
                     if buttonClicked == False:
                         self.window.fill(self.cor_branca)
                     ##Se foi criado um novo bloco, adiciona ele na lista de blocos
-                    if newObject != False:
+                    if  newObject == "Generate Code":
+                        
+                        stop = True
+                        self.generateCode()
+
+                    
+                    elif newObject != False:
                         self.objects.append(newObject)
 
                 ##Deletar algum bloco
@@ -288,6 +409,9 @@ class Main:
                                 orient = False
                                 block = False
                                 newPos = False
+                            else:
+                                objectClicked.drawSuggestion(newPos, self.tela)
+                                
                 ######
       
                 if event.type == pygame.QUIT: ## Verifica se o usuario clicou no X vermelho para fechar
