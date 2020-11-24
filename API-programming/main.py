@@ -93,17 +93,47 @@ class Main:
              
              elif blocosOrdenados[cont].getType() == "mover":
                  cont += 1
-                 value1 = blocosOrdenados[cont].getText()
+                  
+                 if blocosOrdenados[cont].getType() == "operacao":
+                     ope = blocosOrdenados[cont].getText()
+                     cont += 1
+                     val1 = blocosOrdenados[cont].getText()
+                     print("Tipo1: ", blocosOrdenados[cont].getType())
+                     cont += 1
+                     val2 = blocosOrdenados[cont].getText()
+                     print("Tipo 2: ", blocosOrdenados[cont].getType())
+                     
+                     value1 = val1 + " " + ope + " " + val2
+                 else:
+                     value1 = blocosOrdenados[cont].getText()
+
+
                  codigoPython += "\n" + ident*" " +"mover(" + value1 + ")"
                 
              elif blocosOrdenados[cont].getType() == "girarAnti":
                  cont += 1
-                 value1 = blocosOrdenados[cont].getText()
+                 if blocosOrdenados[cont].getType() == "operacao":
+                     ope = blocosOrdenados[cont].getText()
+                     cont += 1
+                     val1 = blocosOrdenados[cont].getText()
+                     cont += 1
+                     val2 = blocosOrdenados[cont].getText()
+                     value1 = val1 + " " + ope + " " + val2
+                 else:
+                     value1 = blocosOrdenados[cont].getText()
                  codigoPython += "\n" + ident*" " +"girarAntihorario(" + value1 + ")"
 
              elif blocosOrdenados[cont].getType() == "girarHor":
                  cont += 1
-                 value1 = blocosOrdenados[cont].getText()
+                 if blocosOrdenados[cont].getType() == "operacao":
+                     ope = blocosOrdenados[cont].getText()
+                     cont += 1
+                     val1 = blocosOrdenados[cont].getText()
+                     cont += 1
+                     val2 = blocosOrdenados[cont].getText()
+                     value1 = val1 + " " + ope + " " + val2
+                 else:
+                     value1 = blocosOrdenados[cont].getText()
                  codigoPython += "\n" + ident*" " +"girarHorario(" + value1 + ")"
 
              elif blocosOrdenados[cont].getType() == "enquanto":
@@ -124,17 +154,27 @@ class Main:
                  codigoPython += "\n" + ident*" " + value1 + " = 0" 
 
              elif blocosOrdenados[cont].getType() == "setarVariavel":
-                 
+                  
                  variavel = blocosOrdenados[cont].getText()
                  cont += 1
-                 value1 = blocosOrdenados[cont].getText()
-                 codigoPython += "\n" + ident*" "+ variavel + " = " + value1
+                 if blocosOrdenados[cont].getType() == "operacao":
+                     ope = blocosOrdenados[cont].getText()
+                     cont += 1
+                     val1 = blocosOrdenados[cont].getText()
+                     cont += 1
+                     val2 = blocosOrdenados[cont].getText()
+                     value1 = val1 + " " + ope + " " + val2
+                 else:
+                     value1 = blocosOrdenados[cont].getText()
+                 codigoPython += "\n" + ident * " " + variavel + " = " + value1
              
              cont += 1
              
          
          print("-----------------------------")
          print (codigoPython)
+         arquivo = open("codigo.py", "w")
+         arquivo.write(codigoPython)
 
             
 
@@ -152,17 +192,12 @@ class Main:
         newPos = False
         while not stop:
            
-            ##Desenha o retangulo cinza que contem o menu lateral
-            pygame.draw.rect(self.tela, (192,192,192), [0, 0, 100, self.altura])
-            ##Mostra os botoes do menu
-            self.menu.show(self.tela)
+          
             ##Faz a animacao se caso o mouse estiver emcima de algum botao
             self.menu.mouseOn(self.tela, pygame.mouse.get_pos())
              
-            pygame.display.flip()
-            pygame.display.update()
-            for i in self.objects:
-                i.show(self.tela)
+        
+ 
             
                 
             for event in pygame.event.get():
@@ -413,7 +448,15 @@ class Main:
                                 objectClicked.drawSuggestion(newPos, self.tela)
                                 
                 ######
-      
+                ##Desenha o retangulo cinza que contem o menu lateral
+                pygame.draw.rect(self.tela, (192,192,192), [0, 0, 100, self.altura])
+                ##Mostra os botoes do menu
+                self.menu.show(self.tela)
+                for i in self.objects:
+                    i.show(self.tela)
+                pygame.display.flip()
+                pygame.display.update()
+                
                 if event.type == pygame.QUIT: ## Verifica se o usuario clicou no X vermelho para fechar
                     pygame.quit()
                     stop = True
