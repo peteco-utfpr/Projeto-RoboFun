@@ -25,6 +25,9 @@ class Model:
         self.view = View(self)
         self.maze = Maze(rows,columns)
 
+        self.front = 0
+        self.directions = ["N", "L", "S", "O"]
+
     def draw(self):
         """Desenha o labirinto em formato texto."""
         self.view.draw()
@@ -64,10 +67,38 @@ class Model:
         return 1
 
     def go(self, action):
-        result = action.do()
-        position = result[0]
-        
-        row = position[0]
-        col = position[1]
-        self.setAgentPos(row, col)
-        return result[1]
+        ##Se a acao for mover, ele da passo para a direção em que ele estiver de frente
+        if action == "M":
+            if self.directions[self.front] == "N":
+                np = (self.agentPos[0], self.agentPos[1]-1)
+            elif self.directions[self.front] == "L":
+                np = (self.agentPos[0]+1, self.agentPos[1])
+            elif self.directions[self.front] == "S":
+                np = (self.agentPos[0], self.agentPos[1]+1)
+            elif self.directions[self.front] == "O":
+                np = (self.agentPos[0]-1, self.agentPos[1])
+                
+            if  self.maze.walls[np[0]][np[1]] == 1 or np[0] >= self.maze.maxColumns or np[1] >= self.maze.maxRows or np[0] < 0 or np[1] < 0:
+                print("Nao pode se mover para ca!")
+                return 1
+            else:
+                self.setAgentPos(np[0], np[1])
+        elif action == "GA":
+             self.view.rotateRobotImage("A")
+             self.front -= 1
+             if self.front < 0:
+                 self.front = 3
+        elif action == "GH":
+             self.view.rotateRobotImage("H")
+             self.front += 1
+             if self.front > 3:
+                 self.front = 0
+        return 1
+##        
+##        result = action.do()
+##        position = result[0]
+##        
+##        row = position[0]
+##        col = position[1]
+##        self.setAgentPos(row, col)
+##        return result[1]

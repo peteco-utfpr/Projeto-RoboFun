@@ -1,8 +1,11 @@
 import pygame, time, math, sys, os
 from random import *
 from pygame.locals import *
+sys.path.append('API-programming')
 from menu import Menu
 from objectUse import ObjectUse
+
+from mainSimulator import MainSimulator
 ##Inspiracao
 ##https://developers.google.com/blockly/
 
@@ -32,9 +35,12 @@ class Main:
     def generateCode(self):
          print ("Hora de gerar o Código!")
          blocosOrdenados = sorted(self.objects, key = ObjectUse.getPosInversed)
-         codigoPython = ""
+         codigoPython = "class CodeBlock:"
+         codigoPython += "\n def generate(self):"
+         codigoPython += "\n  plano = []"
+         
          cont = 0
-         ident = 0
+         ident = 2
          blockIdent = []
          anterior = False
          
@@ -54,8 +60,8 @@ class Main:
                      ##print("Nao ta conectado com o de cima")
                      minimo = 100000
                      aliged = False
-                     valueIde = 0
-                     valueCont = 0
+                     valueIde = 2
+                     valueCont = 2
                      for i in blockIdent:
                          distIdent = abs(i.getPos()[0] - blocosOrdenados[cont].getPos()[0])
                          if distIdent < minimo:
@@ -107,8 +113,11 @@ class Main:
                  else:
                      value1 = blocosOrdenados[cont].getText()
 
-
-                 codigoPython += "\n" + ident*" " +"mover(" + value1 + ")"
+                 codigoPython += "\n" + ident*" " + "cont = 0"
+                 codigoPython += "\n" + ident*" " + "while cont < " + value1 + ":"
+                 codigoPython += "\n" + ident*" " + " " + "plano.append('M')"
+                 codigoPython += "\n" + ident*" " + " " + "cont += 1" 
+                 ##codigoPython += "\n" + ident*" " +"mover(" + value1 + ")"
                 
              elif blocosOrdenados[cont].getType() == "girarAnti":
                  cont += 1
@@ -121,7 +130,12 @@ class Main:
                      value1 = val1 + " " + ope + " " + val2
                  else:
                      value1 = blocosOrdenados[cont].getText()
-                 codigoPython += "\n" + ident*" " +"girarAntihorario(" + value1 + ")"
+                     
+                 codigoPython += "\n" + ident*" " + "cont = 0"
+                 codigoPython += "\n" + ident*" " + "while cont < " + value1 + ":"
+                 codigoPython += "\n" + ident*" " + " " + "plano.append('GA')"
+                 codigoPython += "\n" + ident*" " + " " + "cont += 1" 
+                 ##codigoPython += "\n" + ident*" " +"girarAntihorario(" + value1 + ")"
 
              elif blocosOrdenados[cont].getType() == "girarHor":
                  cont += 1
@@ -134,7 +148,12 @@ class Main:
                      value1 = val1 + " " + ope + " " + val2
                  else:
                      value1 = blocosOrdenados[cont].getText()
-                 codigoPython += "\n" + ident*" " +"girarHorario(" + value1 + ")"
+                     
+                 codigoPython += "\n" + ident*" " + "cont = 0"
+                 codigoPython += "\n" + ident*" " + "while cont < " + value1 + ":"
+                 codigoPython += "\n" + ident*" " + " " + "plano.append('GH')"
+                 codigoPython += "\n" + ident*" " + " " + "cont += 1" 
+                 ##codigoPython += "\n" + ident*" " +"girarHorario(" + value1 + ")"
 
              elif blocosOrdenados[cont].getType() == "enquanto":
                  
@@ -170,12 +189,14 @@ class Main:
              
              cont += 1
              
-         
+         codigoPython += "\n  return plano"
          print("-----------------------------")
          print (codigoPython)
-         arquivo = open("codigo.py", "w")
+         arquivo = open("codeBlock.py", "w")
          arquivo.write(codigoPython)
 
+         executionSimulator = MainSimulator()
+         executionSimulator.main()
             
 
          ##Ordenar pela posicao em Y, e como "desempate", o Y
@@ -213,7 +234,7 @@ class Main:
                     ##Se foi criado um novo bloco, adiciona ele na lista de blocos
                     if  newObject == "Generate Code":
                         
-                        stop = True
+                        ##stop = True
                         self.generateCode()
 
                     

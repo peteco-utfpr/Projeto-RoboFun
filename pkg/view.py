@@ -129,3 +129,8 @@ class View:
        
         pygame.display.update()
 
+    def rotateRobotImage(self, direction):
+        if direction == "A":
+            self.robo = pygame.transform.rotate(self.robo, 90)
+        elif direction == "H":
+            self.robo = pygame.transform.rotate(self.robo, 270)

@@ -8,6 +8,8 @@ from cardinal import action
 from tree import TreeNode
 from lrta import Lrta
 
+from codeBlock import CodeBlock
+
 sys.path.append('pkg/planner')
 from planner import Planner
 
@@ -53,25 +55,26 @@ class Agent:
 
         # o metodo abaixo serve apenas para a view desenhar a pos objetivo
      
-
+      
         # Plano de busca - inicialmente vazio (equivale a solucao)
         self.plan = []
 
         self.costAll = 0
 
 
-        self.planToGoal = Lrta(9, 9, self.prob.goalState, initial, "goal")
-        self.planToGoal.startManhattanHeuristic(self.prob.mazeBelief.walls)  
+##        self.planToGoal = Lrta(9, 9, self.prob.goalState, initial, "goal")
+##        self.planToGoal.startManhattanHeuristic(self.prob.mazeBelief.walls)  
+##
+##        self.planToBegin = Lrta(9, 9, initial, initial, "begin")
+##        self.planToBegin.startManhattanHeuristic(self.prob.mazeBelief.walls)
 
-        self.planToBegin = Lrta(9, 9, initial, initial, "begin")
-        self.planToBegin.startManhattanHeuristic(self.prob.mazeBelief.walls)
-
-        self.libPlan = [self.planToGoal] 
+        self.libPlan = []
         
-        self.plan = [self.planToGoal]
+        code = CodeBlock()
+        self.plan = code.generate()
 
-        plann = Planner()
-        print(plann.generate())
+        ##plann = Planner()
+        ##print(plann.generate())
 
     def deliberate(self):
         # Primeira chamada, realiza busca para elaborar um plano
