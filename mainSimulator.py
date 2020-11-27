@@ -35,14 +35,26 @@ class MainSimulator:
 
         self.model.setGoalPos(2,8)
         # Cria um agente
-        agent = Agent(self.model)
+        self.agent = Agent(self.model)
 
         self.model.draw()
         print("\n Início do ciclo de raciocínio do agente \n")
-        while agent.deliberate() != -1:
+        while self.agent.deliberate() != -1:
+            print("Pensando!")
             self.model.draw()
             time.sleep(0.3)
+        return 1
 
+    def addNewPlan(self, plan):
+        self.agent.addPlan(plan)
+        self.model.draw()
+        print("\n Início do ciclo de raciocínio do agente \n")
+        while self.agent.deliberate() != -1:
+            print("Pensando!")
+            self.model.draw()
+            time.sleep(0.3)
+        return 1
+        
 
 ##        
 ##if __name__ == '__main__':

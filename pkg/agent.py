@@ -8,7 +8,7 @@ from cardinal import action
 from tree import TreeNode
 from lrta import Lrta
 
-from codeBlock import CodeBlock
+
 
 sys.path.append('pkg/planner')
 from planner import Planner
@@ -70,8 +70,7 @@ class Agent:
 
         self.libPlan = []
         
-        code = CodeBlock()
-        self.plan = code.generate()
+       
 
         ##plann = Planner()
         ##print(plann.generate())
@@ -116,3 +115,7 @@ class Agent:
     def updateLibPlan(self):
         for i in self.libPlan:
             i.updateCurrentState(self.currentState)
+            
+    def addPlan(self, plano):
+        for i in plano:
+            self.plan.append(i)

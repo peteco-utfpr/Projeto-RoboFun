@@ -4,18 +4,20 @@ from pygame.locals import *
 sys.path.append('API-programming')
 from menu import Menu
 from objectUse import ObjectUse
-
+import importlib
 from mainSimulator import MainSimulator
+
 ##Inspiracao
 ##https://developers.google.com/blockly/
-
+plano = []
 
 class Main:
     def __init__(self):
         pygame.init() 
         ## Define o tamanho da tela
-        self.largura = 1200
-        self.altura = 600
+        self.largura = 1300
+        self.altura = 550
+        self.larguraProgramming = 600
 
         self.window = pygame.display.set_mode((self.largura, self.altura)) ##Cria uma tela.. X e Y
         pygame.display.set_caption("Block Program")##Nomeia a Janela
@@ -30,13 +32,16 @@ class Main:
         ##Uma lista que armazena todos os blocos inseridos para a programação
         self.objects = []
         self.ajusteVisual = 12
+        self.executionSimulator = MainSimulator()
+        self.executionSimulator.main()
+        
 
 
     def generateCode(self):
          print ("Hora de gerar o Código!")
          blocosOrdenados = sorted(self.objects, key = ObjectUse.getPosInversed)
-         codigoPython = "class CodeBlock:"
-         codigoPython += "\n def generate(self):"
+         codigoPython = ""##"class CodeBlock:"
+         codigoPython += "\ndef generate():"
          codigoPython += "\n  plano = []"
          
          cont = 0
@@ -190,14 +195,19 @@ class Main:
              cont += 1
              
          codigoPython += "\n  return plano"
+         codigoPython += "\nplano=generate()"
+         
          print("-----------------------------")
          print (codigoPython)
          arquivo = open("codeBlock.py", "w")
          arquivo.write(codigoPython)
+         arquivo.close()
 
-         executionSimulator = MainSimulator()
-         executionSimulator.main()
-            
+         exec( codigoPython, globals())
+         print(plano)
+
+         self.executionSimulator.addNewPlan(plano)
+         
 
          ##Ordenar pela posicao em Y, e como "desempate", o Y
          
@@ -230,12 +240,14 @@ class Main:
                     
                     ##Se foi clicado, apaga o menu lateral que abriu
                     if buttonClicked == False:
-                        self.window.fill(self.cor_branca)
+                        pygame.draw.rect(self.tela, self.cor_branca, [0, 0, self.larguraProgramming,self.altura])
+                        ##self.window.fill(self.cor_branca)
                     ##Se foi criado um novo bloco, adiciona ele na lista de blocos
                     if  newObject == "Generate Code":
                         
                         ##stop = True
                         self.generateCode()
+                        break
 
                     
                     elif newObject != False:
@@ -245,7 +257,8 @@ class Main:
                 if event.type == pygame.KEYDOWN:
                     if event.key == K_DELETE and objectClicked != False:
                         self.objects.remove(objectClicked)
-                        self.window.fill(self.cor_branca)
+                        ##self.window.fill(self.cor_branca)
+                        pygame.draw.rect(self.tela, self.cor_branca, [0, 0, self.larguraProgramming,self.altura])
                         for i in self.objects:
                             for j in i.connectedFixed:
                                 if j[0] == objectClicked:
@@ -307,7 +320,8 @@ class Main:
                                     objectClicked.addConnection([block , orient], True)
                                     block.addConnection([objectClicked, orient], False)
                                     
-                                self.window.fill(self.cor_branca)
+                                ##self.window.fill(self.cor_branca)
+                                pygame.draw.rect(self.tela, self.cor_branca, [0, 0, self.larguraProgramming,self.altura])
                                 objectClicked.setPos(newPos, self.ajusteVisual)
                                 
                 ##Durante o momento de arrastar o mouse com o objeto selecionado 
