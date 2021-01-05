@@ -3,7 +3,7 @@ from random import *
 from pygame.locals import *
 sys.path.append('programming-blocks')
 from menu import Menu
-from objectUse import ObjectUse
+import objectUse
 import importlib
 from mainSimulator import MainSimulator
 
@@ -47,7 +47,7 @@ class Main:
     ## Método utilizado para a interpretação e geração do código feito em blocos
     def generateCode(self):
         ## Ordena os blocos de acordo com a posição em Y e X
-        blocosOrdenados = sorted(self.objects, key = ObjectUse.getPosInversed)
+        blocosOrdenados = sorted(self.objects, key = objectUse.ObjectUse.getPosInversed)
         ## A interpretação vai ser feita toda dentro de uma string, e depois será convertida para código
         codigoPython = "\ndef generate():"
         codigoPython += "\n  plano = []"
@@ -65,6 +65,7 @@ class Main:
             
             ##Verifica se existe um bloco anterior
             if anterior != False:
+
                 noConnection = True
                 ## Percorre todos os que estão acoplados no bloco anterior
                 for i in anterior.connectedFixed:
@@ -78,15 +79,16 @@ class Main:
 
                     ##Portanto, será necessário verificar identação do bloco
                     ##Fazemos isso verificando a distância em X em relação aos outros blocos
-                    minimo = 100000
+                    minimo = 1000000000000
                     aliged = False
-                    valueIde = 2
-                    valueCont = 2
+                    valueIde = -1
+                    valueCont = 0
+                    
                     ## Percorrermos a lista de blocos identados
                     for i in blockIdent:
-                        ## Calcula a distância, e armazena a menor distância
+                        ## Calcula a distância, e armazena a menor delas
                         distIdent = abs(i.getPos()[0] - blocosOrdenados[cont].getPos()[0])
-                        if distIdent < minimo:
+                        if distIdent <= (minimo):   
                             minimo = distIdent
                             aliged = i
                             valueIde = valueCont
@@ -94,10 +96,12 @@ class Main:
                     aux = 0
                     listAux = []
                     ## Atualiza a lista de idents. Deixando apenas aqueles que tem a identação correta com o atual bloco
-                    while aux < valueIde:
+                    
+                    while aux <= valueIde:
                         listAux.append(blockIdent[aux])
                         aux += 1
-                    ident = valueIde
+                    blockIdent = listAux.copy()
+                    ident = len(blockIdent) + 2
             ##########FIM DO AJUSTE DE IDENTAÇÃO########################
                     
             ## Nesse momento a identação já está correta
@@ -246,7 +250,8 @@ class Main:
                     ## Caso não for uma operação, apenas pega o valor 
                     value1 = blocosOrdenados[cont].getText()
                 ## Adiciona tudo na string de código
-                codigoPython += "\n" + ident * " " + variavel + " = " + value1
+                codigoPython += "\n" + ident*" " + variavel + " = " + value1
+                
             cont += 1
 
         ## Encerra o método criado, e faz a chamada da função
@@ -286,8 +291,15 @@ class Main:
         ##Variavel para o controle do loop de execução
         stop = False
 
+
+       
         ## Loop de execução
         while not stop:
+
+            ## Variavel que controla se um novo bloco foi gerado. Serve para evitar realizar algumas comparacoes mais adiante
+            newBlockCreated = False
+
+
             ## Váriavel que define se é necessário redesenhar os blocos da programação
             reDraw = False
           
@@ -323,7 +335,13 @@ class Main:
                         self.objects.append(newObject)
                         ## Ordena os objetos de acordo com a area ocupadas por eles, deixando os que tem menores areas na frente
                         ## Faz isso para facilitar a visualização, e nenhum bloco menor ficar escondido atras de outro maior
-                        self.objects.sort(key = ObjectUse.getArea, reverse=True)
+                        self.objects.sort(key = objectUse.ObjectUse.getArea)
+                        newBlockCreated = True
+
+                        ## Tira a seleção de algum bloco, se ele estiver selecionado
+                        if objectClicked != False:
+                            objectClicked.mouseClick((0,0))
+                            objectClicked = False
 
                 ##--------------------------------------------------------------------------------------------##
                 ######## REMOÇÃO DE BLOCOS  #####      
@@ -373,20 +391,21 @@ class Main:
                 ####Funcionamento do Drag and Drop dos blocos adicionados
                     
                 ## Verifica o momento em que o usuário apertou o botão do mouse (MOUSEBUTTONDOWN) e se não foi seleciona uma caixa de texto
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.type == pygame.MOUSEBUTTONDOWN and newBlockCreated == False:
                     ## Verifica se o botão da direita foi clicado
                     if event.button == 1:
                         ## Variavel que irá armazenar o bloco selecionado
                         objectClicked = False
-                        ## Percorre os objetos e verifica se o objeto foi clicado 
+                        ## Percorre os objetos e verifica se o objeto foi clicado
+                        aux = False
                         for i in self.objects:
-                            aux = i.mouseClick(pygame.mouse.get_pos())
+                            if objectClicked == False:
+                                aux = i.mouseClick(pygame.mouse.get_pos())
                             ## Se caso foi clicado, o objeto se encontra em aux
                             ## Irá salvar o primeiro bloco que encontrar (dando preferencia aos que aparecem na frente) em caso de blocos um sobre o outro
-                            if aux != False:
                                 objectClicked = aux
+                            else:
                                 break
-                           
                         ##Salva os dados da posicao do objeto, para o calculo do desvio do clique do mouse em relacao ao canto esquerdo dele
                         if objectClicked != False:
                             ## Define que um objeto está em processo de Drag and drop
@@ -397,7 +416,7 @@ class Main:
                             offset_y = posOb[1] - mouse_y
 
                 ##Verifica se o botao do mouse parou de ser clicado
-                elif event.type == pygame.MOUSEBUTTONUP:
+                elif event.type == pygame.MOUSEBUTTONUP and newBlockCreated == False:
                         ## Verifica se é o botão da direita que deixou de de ser apertado
                         if event.button == 1:
                             ## Define que nenhum bloco está em processo de drag and drop
@@ -415,7 +434,9 @@ class Main:
                                 objectClicked.connectedDinamic = []
                                 ## Define para desenhar os blocos novamente
                                 reDraw = True
-
+                                                  
+                          
+                                
                             ## Verifica se existe algum encaixe sugerido disponível
                             if dist != 99999 and newPos != False and objectClicked != False:
                                
@@ -423,27 +444,48 @@ class Main:
                                 ## Os tipos dependentes são: N (norte), O (oeste), I1-op, I2-op (interno 1 e 2 da opereção)
                                 ## I1-en, I2-en (interno 1 e 2 do enquanto), A-en (aninhado ao enquanto), I1-se, I2-se (interno 1 e 2 do se)
                                 ## A-se (aninhado ao se), A-senao (aninhado ao senão)
-                                if orient == "N" or orient == "O" or orient == "I1-op" or orient == "I2-op" or orient == "I1-en" or orient == "I2-en" or orient == "A-en" or orient == "I1-se" or orient == "I2-se" or orient == "A-se" or orient == "A-senao":
-                                    ## Se for dependende, adiciona como sendo uma conexão dinamic para o objeto clicado
-                                    ## E uma conexão fixed para o objeto que recebe o encaixe
-                                    objectClicked.addConnection([block, orient], False)
-                                    block.addConnection( [objectClicked, orient], True)
-                                else:
-                                    ## Faz ao contrário da parte acima:
-                                    ## Adiciona como sendo fixed para o bloco clicado
-                                    ## E dinamic para o outro bloco
-                                    objectClicked.addConnection([block , orient], True)
-                                    block.addConnection([objectClicked, orient], False)
 
-                                ## Apaga todos os blocos (limpa a tela)
+                                ## Verifica se não um bloco não está se conectando com ele mesmo
+                                enableConnect = True
+                                if block == objectClicked:
+                                    enableConnect = False
+                                
+                                if enableConnect:
+                                    if orient == "N" or orient == "O" or orient == "I1-op" or orient == "I2-op" or orient == "I1-en" or orient == "I2-en" or orient == "A-en" or orient == "I1-se" or orient == "I2-se" or orient == "A-se" or orient == "A-senao":
+                                        ## Se for dependende, adiciona como sendo uma conexão dinamic para o objeto clicado
+                                        ## E uma conexão fixed para o objeto que recebe o encaixe
+                                        objectClicked.addConnection([block, orient], False)
+                                        block.addConnection( [objectClicked, orient], True)
+
+                                        ## Seta a posição do objeto atual para ser a definida pelo do encaixe
+                                        ## O ajuste visual é passado como parametro visando encaixar melhor os blocos visualmente (por causa do encaixezinho como peça de quebra-cabeça)
+                                        objectClicked.setPos(newPos, self.ajusteVisual)
+                                        objectClicked.mouseClick((0,0))
+                                        
+                                        dist = 99999
+                                        newPos = False
+                                    else:
+                                        ## Faz ao contrário da parte acima:
+                                        ## Adiciona como sendo fixed para o bloco clicado
+                                        ## E dinamic para o outro bloco
+                                        objectClicked.addConnection([block , orient], True)
+                                        block.addConnection([objectClicked, orient], False)
+
+                                        ## Seta a posição do objeto atual para ser a definida pelo do encaixe
+                                        ## O ajuste visual é passado como parametro visando encaixar melhor os blocos visualmente (por causa do encaixezinho como peça de quebra-cabeça)
+                                        objectClicked.setPos(newPos, self.ajusteVisual)
+                                        objectClicked.mouseClick((0,0))
+                                       
+                                        dist = 99999
+                                        newPos = False
+                                   
+                                    ## Apaga todos os blocos (limpa a tela)
                                 pygame.draw.rect(self.tela, self.cor_branca, [0, 0, self.larguraProgramming,self.altura])
-                                ## Seta a posição do objeto atual para ser a definida pelo do encaixe
-                                ## O ajuste visual é passado como parametro visando encaixar melhor os blocos visualmente (por causa do encaixezinho como peça de quebra-cabeça)
-                                objectClicked.setPos(newPos, self.ajusteVisual)
+                                   
                             
                 ##Durante o momento de arrastar o mouse com o objeto selecionado
                 ## Verifica se o mouse está se movendo
-                elif event.type == pygame.MOUSEMOTION:
+                elif event.type == pygame.MOUSEMOTION and newBlockCreated == False:
                     ## Verifica se está carregando algum objeto
                     if draging:
                         ## Se estiver, verifica se o objeto não passa dos limites da borda da tela
@@ -635,8 +677,17 @@ class Main:
                                                     newPos = np
                                                     
               
+ 
+                            ## Verifica se já não há alguma outra conexão naquele lugar. Caso sim, então cancela a sugestão
+                            otherConnect = False
+                            for i in self.objects:
+                                if i != objectClicked and newPos == i.getPos():
+                                    otherConnect = True
+                                    break
+
                             ## Compara a menor distância encontrada com um limiar (no caso, 20). Se for menor, ira sugerir como opcao para conexao
-                            if dist > 20:
+                            ## E verifica se aquele bloco já não está conectado a outro
+                            if dist > 20 or len(objectClicked.connectedDinamic) > 0 or otherConnect == True:
                                 ## Se for superior a esse valor, reseta os valores encontrados e não tem nenhuma sugestão
                                 dist = 99999
                                 orient = False
@@ -653,9 +704,11 @@ class Main:
 
                 ## Verifica se é para desenhar todos os blocos na tela (novamente)
                 if reDraw == True:
-                    for i in self.objects:
-                        i.show(self.tela)
-
+                    cont = len(self.objects) - 1
+                    while cont >= 0:
+                        self.objects[cont].show(self.tela)
+                        cont -= 1
+                        
                 ## Atualiza a tela 
                 pygame.display.flip()
                 pygame.display.update()
@@ -669,3 +722,4 @@ class Main:
 main = Main()
 ## Executa
 main.run()
+

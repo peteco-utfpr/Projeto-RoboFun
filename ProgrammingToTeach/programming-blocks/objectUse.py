@@ -1,5 +1,5 @@
 import pygame, os
-from inputText import InputText 
+import inputText 
 
 ## Classe usada para os blocos sendo usados na programção
 class ObjectUse:
@@ -46,7 +46,7 @@ class ObjectUse:
         ## Offset da posição do texto em relação a posição do bloco
         self.offsetPosText = (self.pos[0] -  self.posText[0], self.pos[1] -  self.posText[1])
         ## Cria o objeto para escrever o texto
-        self.inputText = InputText(self.posText[0], self.posText[1], 30, 30, '1', only)
+        self.input_Text = inputText.InputText(self.posText[0], self.posText[1], 30, 30, '1', only)
 
         ## Armazena se o bloco está selecionado
         self.active = False
@@ -64,7 +64,7 @@ class ObjectUse:
     def textEnter(self, event):
         result = False
         if self.hasText != False:
-            result = self.inputText.handle_event(event)
+            result = self.input_Text.handle_event(event)
         return result
             
     ## Mostra os bloco e seu texto na tela
@@ -75,14 +75,15 @@ class ObjectUse:
             tela.blit(self.image, self.pos)
             
         if self.hasText == True:
-            self.inputText.show(tela)
+            self.input_Text.show(tela)
 
     ## Seta a bloco para uma posicao, e reposiciona os blocos fixos dele cascateamente
     def setPos(self, pos, ajusteVisual):
         self.pos = pos
-        self.inputText.setPos((pos[0] - self.offsetPosText[0], pos[1] - self.offsetPosText[1]))
+        self.input_Text.setPos((pos[0] - self.offsetPosText[0], pos[1] - self.offsetPosText[1]))
         ## Para todos os objetos conectados da maneira Fixed, depende da maneira como a conexão é realizada para fazer o ajuste
         for i in self.connectedFixed:
+            print(i[0].getType())
             ## Encaixe normal lateral
             if i[1] == "O" or i[1] == "L":
                 newPos = (self.pos[0] + self.size[0] - ajusteVisual , self.pos[1])
@@ -140,8 +141,8 @@ class ObjectUse:
 
     ##A diciona uma conexao
     def addConnection(self, obj, fixed = True):
-        if fixed == True:
-             self.connectedFixed.append(obj)
+        if fixed == True:            
+            self.connectedFixed.append(obj)
         else:
             self.connectedDinamic.append(obj)
     ## Deleta uma conexao
@@ -161,7 +162,7 @@ class ObjectUse:
 
     ## Retorna o texto escrito
     def getText(self):
-        return self.inputText.getText()
+        return self.input_Text.getText()
 
     ## Retorna a area ocupado pelo bloco
     def getArea(self):
