@@ -263,6 +263,11 @@ class Main:
         arquivo.write(codigoPython)
         arquivo.close()
 
+
+        arquivo2 = open(os.path.join("API-Connection", "codeBlockCompRobot.py"), "w")
+        arquivo2.write(codigoPython)
+        arquivo2.close()
+
         ## Faz a execução do código da string através da função exec()
         ## Passa o parametro global para as variaveis que ele usar no exec, serem do tipo globais
         ## O plano resultante saira na variavel: plano
