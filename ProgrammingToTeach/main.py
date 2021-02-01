@@ -30,7 +30,8 @@ class Main:
         self.cor_preta = (0, 0, 0)
         self.cor_cinza = (128,128,128)
         self.window.fill(self.cor_branca)
-        
+        pygame.mixer.init()
+        pygame.mixer.music.load("sound.mp3")
         ##Cria um menu com as opções dos blocos
         self.menu = Menu()
         ##Uma lista que armazena todos os blocos inseridos para a programação
@@ -456,12 +457,13 @@ class Main:
                                     enableConnect = False
                                 
                                 if enableConnect:
+                                    pygame.mixer.music.play()
                                     if orient == "N" or orient == "O" or orient == "I1-op" or orient == "I2-op" or orient == "I1-en" or orient == "I2-en" or orient == "A-en" or orient == "I1-se" or orient == "I2-se" or orient == "A-se" or orient == "A-senao":
                                         ## Se for dependende, adiciona como sendo uma conexão dinamic para o objeto clicado
                                         ## E uma conexão fixed para o objeto que recebe o encaixe
                                         objectClicked.addConnection([block, orient], False)
                                         block.addConnection( [objectClicked, orient], True)
-
+                                        
                                         ## Seta a posição do objeto atual para ser a definida pelo do encaixe
                                         ## O ajuste visual é passado como parametro visando encaixar melhor os blocos visualmente (por causa do encaixezinho como peça de quebra-cabeça)
                                         objectClicked.setPos(newPos, self.ajusteVisual)
@@ -475,7 +477,7 @@ class Main:
                                         ## E dinamic para o outro bloco
                                         objectClicked.addConnection([block , orient], True)
                                         block.addConnection([objectClicked, orient], False)
-
+                                  
                                         ## Seta a posição do objeto atual para ser a definida pelo do encaixe
                                         ## O ajuste visual é passado como parametro visando encaixar melhor os blocos visualmente (por causa do encaixezinho como peça de quebra-cabeça)
                                         objectClicked.setPos(newPos, self.ajusteVisual)
