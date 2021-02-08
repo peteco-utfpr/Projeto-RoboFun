@@ -105,12 +105,6 @@ class Model:
         
         self.setAgentPos(row, col)            
             
-##        result = action.do()
-##        position = result[0]
-##        
-##        row = position[0]
-##        col = position[1]
-##        self.setAgentPos(row, col)
         return result[1]
 
     ## Metodo que executa uma acao (de não movimento)

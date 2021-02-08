@@ -96,7 +96,7 @@ class Agent:
         ## Se o resultado for True, significa que a acao foi completada com sucesso, e ja pode ser removida do plano
         if (result):
             del self.plan[0]
-            self.actionGo([6,7], True)
+            
         return 1
 
     ## Metodo que pega a posicao real do agente no ambiente
@@ -111,5 +111,5 @@ class Agent:
         for i in self.libPlan:
             i.updateCurrentState(self.currentState)
 
-    def actionGo(self, posAction, action = True):
+    def actionDo(self, posAction, action = True):
         self.model.do(posAction, action)

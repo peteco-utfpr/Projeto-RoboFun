@@ -11,8 +11,8 @@ class Bounds(button.Button):
         ##Cada objeto é uma instancia da classe ObjectThing
         ##Os parametros a serem passados são: imagem, tamanho, posicao, quais encaixes ele ofere, quais encaixes ele recebe, se o usuário pode digitar texto
         ##quais o caracteres permitidos, se tiver texto, e o nome do objeto 
-        self.start = ObjectThing("inicio.png",[100, 62], [110, 30], [("S", "macho-normal")], [("N", "femea-normal")], False, False, "inicio")
-        self.end = ObjectThing("fim.png",[100, 50], [110, 136], [("N", "femea-normal")], [("S", "macho-normal")], False, False, "fim")
+        self.start = ObjectThing("inicio.png",[50, 31], [110, 30], [("S", "macho-normal")], [("N", "femea-normal")], False, False, "inicio")
+        self.end = ObjectThing("fim.png",[50, 25], [110, 65], [("N", "femea-normal")], [("S", "macho-normal")], False, False, "fim")
         
         ##Adiciona os elementos na lista de coisas
         self.things.append(self.start)

@@ -5,7 +5,9 @@ sys.path.append('programming-blocks')
 from menu import Menu
 import objectUse
 import importlib
-from mainSimulator import MainSimulator
+sys.path.append('simulator')
+from mainSimulatorProgrammingBlock import MainSimulatorProgrammingBlock
+from planListMoves import PlanListMoves
 
 ##Inspiracao
 ##https://developers.google.com/blockly/
@@ -21,7 +23,7 @@ class Main:
         self.altura = 550
 
         ## Define até onde vai a area para a programação
-        self.larguraProgramming = 600
+        self.larguraProgramming = 700
 
         self.window = pygame.display.set_mode((self.largura, self.altura)) ##Cria uma tela.. X e Y
         pygame.display.set_caption("Block Program")##Nomeia a Janela
@@ -38,11 +40,14 @@ class Main:
         self.objects = []
 
         ## Define um ajuste para os blocos se encaixarem melhor
-        self.ajusteVisual = 12
-
+        self.ajusteVisual = 6
+        
         ## Cria o simulador
-        self.executionSimulator = MainSimulator()
-        self.executionSimulator.main()
+        rows = 8
+        columns = 8
+        mesh = "triangle"
+        self.executionSimulator = MainSimulatorProgrammingBlock(rows, columns, mesh)
+        
         
 
     ## Método utilizado para a interpretação e geração do código feito em blocos
@@ -60,222 +65,190 @@ class Main:
         blockIdent = []
         ##Salva o bloco anterior
         anterior = False
-        ##Percorre todos os blocos 
-        while cont < len(blocosOrdenados):
-            ###### AJUSTE DA IDENTAÇÃO####
-            
-            ##Verifica se existe um bloco anterior
-            if anterior != False:
-
-                noConnection = True
-                ## Percorre todos os que estão acoplados no bloco anterior
-                for i in anterior.connectedFixed:
-                    ## Define se bloco atual está conectado com o anterior
-                    if i[0] == blocosOrdenados[cont]:
-                        noConnection = False
-
-                ## Verifica se esse bloco está conectado com o anterior 
-                if noConnection == True:
-                    ##Se entrar, significa que NÃO está conectado
-
-                    ##Portanto, será necessário verificar identação do bloco
-                    ##Fazemos isso verificando a distância em X em relação aos outros blocos
-                    minimo = 1000000000000
-                    aliged = False
-                    valueIde = -1
-                    valueCont = 0
-                    
-                    ## Percorrermos a lista de blocos identados
-                    for i in blockIdent:
-                        ## Calcula a distância, e armazena a menor delas
-                        distIdent = abs(i.getPos()[0] - blocosOrdenados[cont].getPos()[0])
-                        if distIdent <= (minimo):   
-                            minimo = distIdent
-                            aliged = i
-                            valueIde = valueCont
-                        valueCont += 1
-                    aux = 0
-                    listAux = []
-                    ## Atualiza a lista de idents. Deixando apenas aqueles que tem a identação correta com o atual bloco
-                    
-                    while aux <= valueIde:
-                        listAux.append(blockIdent[aux])
-                        aux += 1
-                    blockIdent = listAux.copy()
-                    ident = len(blockIdent) + 2
-            ##########FIM DO AJUSTE DE IDENTAÇÃO########################
-                    
-            ## Nesse momento a identação já está correta
-            ## Já seta o anterior como o bloco atual
-            anterior = blocosOrdenados[cont]
-
-            ####### VERIFICAÇÃO DOS BLOCOS ######
-
-            ## Verifica se o bloco atual é do tipo SE
-            if blocosOrdenados[cont].getType() == "se":
-                ##Pega o texto escrito no bloco (que será o operador da condição)
-                operador = blocosOrdenados[cont].getText()
-                ## Passa para o próximo bloco, que será o primeiro encaixe dele, o valor 1 da condição
-                cont += 1
-                value1 = blocosOrdenados[cont].getText()
-                ## Passa para o outro bloco, que será o segundo encaixe dele, o valor 2 da condição
-                cont += 1
-                value2 = blocosOrdenados[cont].getText()
-                ## Soma tudo na string
-                codigoPython += "\n" + ident*" " + "if " + value1 + " " + operador + " " + value2 + ":"
-                ## Por se tratar de um Se, existe identação. Então, aumenta um nível de identação
-                ident += 1
-                ## Adiciona esse bloco na lista de blocos identados
-                blockIdent.append(blocosOrdenados[cont-2])
-
-            ## Verifica se o bloco atual é do tipo SENAO    
-            elif blocosOrdenados[cont].getType() == "senao":
-                ##Adiciona na string
-                codigoPython += "\nelse:"
-                ## Aumenta um nível a identação
-                ident += 1
-                blockIdent.append(blocosOrdenados[cont])
-                 
-            ## Verifica se o bloco é do tipo MOVER 
-            elif blocosOrdenados[cont].getType() == "mover":
-                cont += 1
-                ## Verifica se o proximo bloco (aquele que esta encaixado lateralmente nele) é do tipo OPERACAO 
-                if blocosOrdenados[cont].getType() == "operacao":
-                    ## Se for do tipo Operação, pega o texto escrito (que vai ser a operação a ser realizada) 
-                    ope = blocosOrdenados[cont].getText()
-                    ## Pega os dois proximos blocos:
-                    cont += 1
-                    ## Primeiro bloco encaixado (valor 1)
-                    val1 = blocosOrdenados[cont].getText()
-                    cont += 1
-                    ## Segundo bloco encaixado (valor 2)
-                    val2 = blocosOrdenados[cont].getText()
-
-                    ## Soma tudo em uma unica operação
-                    value1 = val1 + " " + ope + " " + val2
-                else:
-                    ## Caso não for uma operação, pega apenas o valor (seja ele constante e variavel)
-                    value1 = blocosOrdenados[cont].getText()
-
-                ## Une tudo na string
-                codigoPython += "\n" + ident*" " + "cont = 0"
-                codigoPython += "\n" + ident*" " + "while cont < " + value1 + ":"
-                codigoPython += "\n" + ident*" " + " " + "plano.append('M')"
-                codigoPython += "\n" + ident*" " + " " + "cont += 1" 
-
-            ## Verifica se o bloco é do tipo GIRAR Antihorario                
-            elif blocosOrdenados[cont].getType() == "girarAnti":
-                cont += 1
-                ## Verifica se tem uma operação acoplada nele
-                if blocosOrdenados[cont].getType() == "operacao":
-                    ## Igual anteriormente, pega os valores de operação e dos dois blocos de dentro dele
-                    ope = blocosOrdenados[cont].getText()
-                    cont += 1
-                    val1 = blocosOrdenados[cont].getText()
-                    cont += 1
-                    val2 = blocosOrdenados[cont].getText()
-                    ## Une em uma string
-                    value1 = val1 + " " + ope + " " + val2
-                else:
-                    ## Senão for uma operação, apenas pega o valor
-                    value1 = blocosOrdenados[cont].getText()
-
-                ## Une tudo na string de código
-                codigoPython += "\n" + ident*" " + "cont = 0"
-                codigoPython += "\n" + ident*" " + "while cont < " + value1 + ":"
-                codigoPython += "\n" + ident*" " + " " + "plano.append('GA')"
-                codigoPython += "\n" + ident*" " + " " + "cont += 1" 
-
-            ## Igual anterior, mas agora verifica se o bloco é GIRAR Horario    
-            elif blocosOrdenados[cont].getType() == "girarHor":
-                cont += 1
-                ## Verifica se está acoplado a uma operação
-                if blocosOrdenados[cont].getType() == "operacao":
-                    ## Pega a operação e os dois valores
-                    ope = blocosOrdenados[cont].getText()
-                    cont += 1
-                    val1 = blocosOrdenados[cont].getText()
-                    cont += 1
-                    val2 = blocosOrdenados[cont].getText()
-                    ## Une em uma string
-                    value1 = val1 + " " + ope + " " + val2
-                else:
-                    ## Se não for uma operação, apenas pega o valor
-                    value1 = blocosOrdenados[cont].getText()
-
-                ## Une tudo na string de código     
-                codigoPython += "\n" + ident*" " + "cont = 0"
-                codigoPython += "\n" + ident*" " + "while cont < " + value1 + ":"
-                codigoPython += "\n" + ident*" " + " " + "plano.append('GH')"
-                codigoPython += "\n" + ident*" " + " " + "cont += 1" 
-
-            ## Verifica se o bloco é um ENQUANTO
-            elif blocosOrdenados[cont].getType() == "enquanto":
-                ## Pega o texto do bloco (que é o operador) 
-                operador = blocosOrdenados[cont].getText()
-                ## Pega os dois valores dos que estão dentro do enquanto
-                cont += 1
-                value1 = blocosOrdenados[cont].getText()
-                cont += 1
-                value2 = blocosOrdenados[cont].getText()
-                ## Une na string de código 
-                codigoPython += "\n" + ident*" " +"while " + value1 + " " + operador + " " + value2 + ":"
-                ## Aumenta um nível de identação
-                ident += 1
-                blockIdent.append(blocosOrdenados[cont-2])
-
-            ## Verifica se o bloco é do tipo CRIAR VARIAVEL
-            elif blocosOrdenados[cont].getType() == "criarVariavel":
-                ## Pega o valor do bloco que está conectado a ele
-                cont += 1
-                value1 = blocosOrdenados[cont].getText()
-                ## Adiciona na string de código
-                codigoPython += "\n" + ident*" " + value1 + " = 0" 
-
-            ## Verifica se o bloco é do tipo SETAR VARIAVEL
-            elif blocosOrdenados[cont].getType() == "setarVariavel":
-                ## Pega o valor do bloco (que será o nome da variavel)     
-                variavel = blocosOrdenados[cont].getText()
-                cont += 1
-                ## Verifica se o bloco acoplado é uma operacao
-                if blocosOrdenados[cont].getType() == "operacao":
-                    ## Se for, pega o valor do texto (operação) e os dois valores (que são os proximos dois blocos)
-                    ope = blocosOrdenados[cont].getText()
-                    cont += 1
-                    val1 = blocosOrdenados[cont].getText()
-                    cont += 1
-                    val2 = blocosOrdenados[cont].getText()
-                    ## Adiciona tudo em uma string
-                    value1 = val1 + " " + ope + " " + val2
-                else:
-                    ## Caso não for uma operação, apenas pega o valor 
-                    value1 = blocosOrdenados[cont].getText()
-                ## Adiciona tudo na string de código
-                codigoPython += "\n" + ident*" " + variavel + " = " + value1
+        try:
+            ##Percorre todos os blocos 
+            while cont < len(blocosOrdenados):
+                ###### AJUSTE DA IDENTAÇÃO####
                 
-            cont += 1
+                ##Verifica se existe um bloco anterior
+                if anterior != False:
 
-        ## Encerra o método criado, e faz a chamada da função
-        codigoPython += "\n  return plano"
-        codigoPython += "\nplano=generate()"
-         
-        ## Salva o código em um arquivo .py 
-        arquivo = open("codeBlock.py", "w")
-        arquivo.write(codigoPython)
-        arquivo.close()
+                    noConnection = True
+                    ## Percorre todos os que estão acoplados no bloco anterior
+                    for i in anterior.connectedFixed:
+                        ## Define se bloco atual está conectado com o anterior
+                        if i[0] == blocosOrdenados[cont]:
+                            noConnection = False
+
+                    ## Verifica se esse bloco está conectado com o anterior 
+                    if noConnection == True:
+                        ##Se entrar, significa que NÃO está conectado
+
+                        ##Portanto, será necessário verificar identação do bloco
+                        ##Fazemos isso verificando a distância em X em relação aos outros blocos
+                        minimo = 1000000000000
+                        aliged = False
+                        valueIde = -1
+                        valueCont = 0
+                        
+                        ## Percorrermos a lista de blocos identados
+                        for i in blockIdent:
+                            ## Calcula a distância, e armazena a menor delas
+                            distIdent = abs(i.getPos()[0] - blocosOrdenados[cont].getPos()[0])
+                            if distIdent <= (minimo):   
+                                minimo = distIdent
+                                aliged = i
+                                valueIde = valueCont
+                            valueCont += 1
+                        aux = 0
+                        listAux = []
+                        ## Atualiza a lista de idents. Deixando apenas aqueles que tem a identação correta com o atual bloco
+                        
+                        while aux <= valueIde:
+                            listAux.append(blockIdent[aux])
+                            aux += 1
+                        blockIdent = listAux.copy()
+                        ident = len(blockIdent) + 2
+                ##########FIM DO AJUSTE DE IDENTAÇÃO########################
+                        
+                ## Nesse momento a identação já está correta
+                ## Já seta o anterior como o bloco atual
+                anterior = blocosOrdenados[cont]
+
+                ####### VERIFICAÇÃO DOS BLOCOS ######
+
+                typeBlockCont = blocosOrdenados[cont].getType()
+                ## Verifica se o bloco atual é do tipo SE
+                if typeBlockCont == "se":
+                    ##Pega o texto escrito no bloco (que será o operador da condição)
+                    operador = blocosOrdenados[cont].getText()
+                    ## Passa para o próximo bloco, que será o primeiro encaixe dele, o valor 1 da condição
+                    cont += 1
+                    value1 = blocosOrdenados[cont].getText()
+                    ## Passa para o outro bloco, que será o segundo encaixe dele, o valor 2 da condição
+                    cont += 1
+                    value2 = blocosOrdenados[cont].getText()
+                    ## Soma tudo na string
+                    codigoPython += "\n" + ident*" " + "if " + value1 + " " + operador + " " + value2 + ":"
+                    ## Por se tratar de um Se, existe identação. Então, aumenta um nível de identação
+                    ident += 1
+                    ## Adiciona esse bloco na lista de blocos identados
+                    blockIdent.append(blocosOrdenados[cont-2])
+
+                ## Verifica se o bloco atual é do tipo SENAO    
+                elif typeBlockCont == "senao":
+                    ##Adiciona na string
+                    codigoPython += "\nelse:"
+                    ## Aumenta um nível a identação
+                    ident += 1
+                    blockIdent.append(blocosOrdenados[cont])
+                     
+
+                ## Verifica se o bloco é do tipo MOVER NORTE/SUL/LESTE/OESTE
+                elif typeBlockCont in ["norte", "sul", "leste", "oeste"]:
+                    cont += 1
+                    ## Verifica se o proximo bloco (aquele que esta encaixado lateralmente nele) é do tipo OPERACAO 
+                    if blocosOrdenados[cont].getType() == "operacao":
+                        ## Se for do tipo Operação, pega o texto escrito (que vai ser a operação a ser realizada) 
+                        ope = blocosOrdenados[cont].getText()
+                        ## Pega os dois proximos blocos:
+                        cont += 1
+                        ## Primeiro bloco encaixado (valor 1)
+                        val1 = blocosOrdenados[cont].getText()
+                        cont += 1
+                        ## Segundo bloco encaixado (valor 2)
+                        val2 = blocosOrdenados[cont].getText()
+
+                        ## Soma tudo em uma unica operação
+                        value1 = val1 + " " + ope + " " + val2
+                    else:
+                        ## Caso não for uma operação, pega apenas o valor (seja ele constante e variavel)
+                        value1 = blocosOrdenados[cont].getText()
+                    mov = False
+                    if typeBlockCont == "norte":
+                        mov = "N"
+                    elif typeBlockCont == "sul":
+                        mov = "S"
+                    elif typeBlockCont == "leste":
+                        mov = "L"
+                    elif typeBlockCont == "oeste":
+                        mov = "O"
+                    ## Une tudo na string
+                    codigoPython += "\n" + ident*" " + "cont = 0"
+                    codigoPython += "\n" + ident*" " + "while cont < " + value1 + ":"
+                    codigoPython += "\n" + ident*" " + " " + "plano.append('" + mov + "')"
+                    codigoPython += "\n" + ident*" " + " " + "cont += 1" 
+
+                ## Verifica se o bloco é um ENQUANTO
+                elif blocosOrdenados[cont].getType() == "enquanto":
+                    ## Pega o texto do bloco (que é o operador) 
+                    operador = blocosOrdenados[cont].getText()
+                    ## Pega os dois valores dos que estão dentro do enquanto
+                    cont += 1
+                    value1 = blocosOrdenados[cont].getText()
+                    cont += 1
+                    value2 = blocosOrdenados[cont].getText()
+                    ## Une na string de código 
+                    codigoPython += "\n" + ident*" " +"while " + value1 + " " + operador + " " + value2 + ":"
+                    ## Aumenta um nível de identação
+                    ident += 1
+                    blockIdent.append(blocosOrdenados[cont-2])
+
+                ## Verifica se o bloco é do tipo CRIAR VARIAVEL
+                elif blocosOrdenados[cont].getType() == "criarVariavel":
+                    ## Pega o valor do bloco que está conectado a ele
+                    cont += 1
+                    value1 = blocosOrdenados[cont].getText()
+                    ## Adiciona na string de código
+                    codigoPython += "\n" + ident*" " + value1 + " = 0" 
+
+                ## Verifica se o bloco é do tipo SETAR VARIAVEL
+                elif blocosOrdenados[cont].getType() == "setarVariavel":
+                    ## Pega o valor do bloco (que será o nome da variavel)     
+                    variavel = blocosOrdenados[cont].getText()
+                    cont += 1
+                    ## Verifica se o bloco acoplado é uma operacao
+                    if blocosOrdenados[cont].getType() == "operacao":
+                        ## Se for, pega o valor do texto (operação) e os dois valores (que são os proximos dois blocos)
+                        ope = blocosOrdenados[cont].getText()
+                        cont += 1
+                        val1 = blocosOrdenados[cont].getText()
+                        cont += 1
+                        val2 = blocosOrdenados[cont].getText()
+                        ## Adiciona tudo em uma string
+                        value1 = val1 + " " + ope + " " + val2
+                    else:
+                        ## Caso não for uma operação, apenas pega o valor 
+                        value1 = blocosOrdenados[cont].getText()
+                    ## Adiciona tudo na string de código
+                    codigoPython += "\n" + ident*" " + variavel + " = " + value1
+                    
+                cont += 1
+
+            ## Encerra o método criado, e faz a chamada da função
+            codigoPython += "\n  return plano"
+            codigoPython += "\nplano=generate()"
+             
+            ## Salva o código em um arquivo .py 
+            arquivo = open("codeBlock.py", "w")
+            arquivo.write(codigoPython)
+            arquivo.close()
 
 
-        arquivo2 = open(os.path.join("API-Connection", "codeBlockCompRobot.py"), "w")
-        arquivo2.write(codigoPython)
-        arquivo2.close()
+            arquivo2 = open(os.path.join("API-Connection", "codeBlockCompRobot.py"), "w")
+            arquivo2.write(codigoPython)
+            arquivo2.close()
 
-        ## Faz a execução do código da string através da função exec()
-        ## Passa o parametro global para as variaveis que ele usar no exec, serem do tipo globais
-        ## O plano resultante saira na variavel: plano
-        exec(codigoPython, globals())
-
-        ## Passa o plano resultante para o simulador
-        self.executionSimulator.addNewPlan(plano)
+            ## Faz a execução do código da string através da função exec()
+            ## Passa o parametro global para as variaveis que ele usar no exec, serem do tipo globais
+            ## O plano resultante saira na variavel: plano
+           
+            exec(codigoPython, globals())
+            planoClass = PlanListMoves(plano)
+            ## Passa o plano resultante para o simulador
+            self.executionSimulator.execution(planoClass)
+        except:
+            print("Um erro na sua programação ocorreu. Verifique!")
          
 
     ##Metodo usado para a execucao do programa
@@ -553,10 +526,10 @@ class Main:
                                                     ## Verifica qual das duas distâncias é menor, e armazena ela, e seta a possível nova posição do bloco de acordo
                                                     if distCalc1 < distCalc2:
                                                         distCalc = distCalc1
-                                                        np = (posStop[0] + 23, posStop[1] + 13)
+                                                        np = (posStop[0] + 12, posStop[1] + 6)
                                                         typ = "I1-op"
                                                     else:
-                                                        np = (posStop[0] + 163, posStop[1] + 13)
+                                                        np = (posStop[0] + 81, posStop[1] + 6)
                                                         typ = "I2-op"
                                                         distCalc = distCalc2
 
@@ -564,17 +537,17 @@ class Main:
                                                 ## E se conexão disponível em Interno (I), macho-normal
                                                 elif i.typeBlock == "enquanto" and j == ("I", "macho-normal"):
                                                     ## Calcula a distâncias para os dois encaixes disponíveis
-                                                    distCalc1 = abs(abs(posCarry[0] - posStop[0]-143) + abs(posCarry[1] - posStop[1] - 13))
-                                                    distCalc2 = abs(abs(posCarry[0] - posStop[0]-283) + abs(posCarry[1] - posStop[1] - 13))
+                                                    distCalc1 = abs(abs(posCarry[0] - posStop[0]-71) + abs(posCarry[1] - posStop[1] - 6))
+                                                    distCalc2 = abs(abs(posCarry[0] - posStop[0]-141) + abs(posCarry[1] - posStop[1] - 6))
                                                     ## Salva o bloco
                                                     bl = i
                                                     ## Selecina a que apresentar a menor distâncias, e seta a possível nova posição do bloco de acordo 
                                                     if distCalc1 < distCalc2:
                                                         distCalc = distCalc1
-                                                        np = (posStop[0] + 143, posStop[1] + 15)
+                                                        np = (posStop[0] + 71, posStop[1] + 7)
                                                         typ = "I1-en"
                                                     else:
-                                                        np = (posStop[0] + 283, posStop[1] + 15)
+                                                        np = (posStop[0] + 141, posStop[1] + 7)
                                                         typ = "I2-en"
                                                         distCalc = distCalc2
 
@@ -584,11 +557,11 @@ class Main:
                                                 ## Essa conexão indica que o bloco estara aninhado com o enquanto
                                                 elif i.typeBlock == "enquanto" and j == ("N", "femea-normal"):
                                                     ## Calcula a distancia 
-                                                    distCalc = abs(abs(posCarry[0] - posStop[0]-91) + abs(posCarry[1] - posStop[1] - 74))
+                                                    distCalc = abs(abs(posCarry[0] - posStop[0]-45) + abs(posCarry[1] - posStop[1] - 37))
                                                     ## Salva o bloco
                                                     bl = i
                                                     ## Seta a possível nova posição
-                                                    np = (posStop[0]+ 93, posStop[1] + 74)
+                                                    np = (posStop[0]+ 45, posStop[1] + 37)
                                                     ## Define o tipo de encaixe
                                                     typ = "A-en"
 
@@ -596,17 +569,17 @@ class Main:
                                                 ## E se aconexão é interna (I) e macho normal
                                                 elif i.typeBlock == "se" and j == ("I", "macho-normal"):
                                                     ## Calcula as duas distâncias (interno 1 e inter 2) 
-                                                    distCalc1 = abs(abs(posCarry[0] - posStop[0] - 58) + abs(posCarry[1] - posStop[1] - 12))
-                                                    distCalc2 = abs(abs(posCarry[0] - posStop[0]-193) + abs(posCarry[1] - posStop[1] - 12) )
+                                                    distCalc1 = abs(abs(posCarry[0] - posStop[0] - 29) + abs(posCarry[1] - posStop[1] - 6))
+                                                    distCalc2 = abs(abs(posCarry[0] - posStop[0]-98) + abs(posCarry[1] - posStop[1] - 6) )
                                                     ## Salva o bloco
                                                     bl = i
                                                     ## Verifica qual tem a menor distância e seta a possível nova posição do bloco de acordo
                                                     if distCalc1 < distCalc2:
                                                         distCalc = distCalc1
-                                                        np = (posStop[0] + 58, posStop[1] + 12)
+                                                        np = (posStop[0] + 29, posStop[1] + 6)
                                                         typ = "I1-se"
                                                     else:
-                                                        np = (posStop[0] + 193, posStop[1] + 13)
+                                                        np = (posStop[0] + 98, posStop[1] + 7)
                                                         typ = "I2-se"
                                                         distCalc = distCalc2
 
@@ -615,9 +588,9 @@ class Main:
                                                 ## Essa conexão indica que o bloco estara aninhado com o se
                                                 elif i.typeBlock == "se" and j == ("N", "femea-normal"):
                                                     ## Calcula a distância, salva o bloco, seta a nova posição... Igual os demais acima
-                                                    distCalc = abs(abs(posCarry[0] - posStop[0]-91) + abs(posCarry[1] - posStop[1] - 74))
+                                                    distCalc = abs(abs(posCarry[0] - posStop[0]-45) + abs(posCarry[1] - posStop[1] - 37))
                                                     bl = i
-                                                    np = (posStop[0]+ 93, posStop[1] + 74)
+                                                    np = (posStop[0]+ 46, posStop[1] + 37)
                                                     typ = "A-se"
 
 
@@ -626,9 +599,9 @@ class Main:
                                                 ## Essa conexão indica que o bloco estara aninhado com o senao
                                                 elif i.typeBlock == "senao" and j == ("N", "femea-normal"):
                                                     ## Calcula a distância, salva o bloco, seta a nova posição... Igual os demais acima
-                                                    distCalc = abs(abs(posCarry[0] - posStop[0]-91) + abs(posCarry[1] - posStop[1] - 24))
+                                                    distCalc = abs(abs(posCarry[0] - posStop[0]-45) + abs(posCarry[1] - posStop[1] - 12))
                                                     bl = i
-                                                    np = (posStop[0]+ 93, posStop[1] + 24)
+                                                    np = (posStop[0]+ 47, posStop[1] + 12)
                                                     typ = "A-senao"
 
                                                 ## Se não for nenhuma das conexões especiais definidas acima, verifica agora de maneira mais geral

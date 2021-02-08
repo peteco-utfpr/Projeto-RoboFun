@@ -17,6 +17,7 @@ class Item:
         self.pos = pos
         self.size = size
         self.screen = screen
+    
 
     ## Metodo para mostrar o item 
     def show(self):

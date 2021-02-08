@@ -4,7 +4,7 @@ pygame.init()
 COLOR_INACTIVE = (211,211,211)
 COLOR_ACTIVE = (255,255,255)
  
-FONT = pygame.font.SysFont(None, 25)
+FONT = pygame.font.SysFont(None, 15)
 
 ##Classe utilizada para permitir adicionar texto no meio dos blocos
 class InputText:
@@ -66,7 +66,7 @@ class InputText:
 
     # Método para mudar o tamanho do retangulo que contem o texto, de acordo com a quantidade de caracteres
     def update(self):
-        width = max(35, self.txt_surface.get_width()+10)
+        width = max(18, self.txt_surface.get_width()+5)
         self.rect.w = width
 
     ## Método usado para mostrar o retangulo e o texto

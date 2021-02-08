@@ -1,6 +1,9 @@
 
 def generate():
   plano = []
-  while 1 1 1:
+  cont = 0
+  while cont < 5:
+   plano.append('S')
+   cont += 1
   return plano
 plano=generate()

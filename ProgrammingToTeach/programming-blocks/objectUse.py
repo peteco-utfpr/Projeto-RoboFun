@@ -40,13 +40,13 @@ class ObjectUse:
 
         ## Define a posição em que a entrada de texto do bloco (como ocorrem em alguns casos) ficaria
         ## As constantes foram definidas visando a melhor maneira visual
-        self.posText = [pos[0] + self.size[0]/2 - 10 + posTextAjuste[0], pos[1] + self.size[1]/2 - 15 + posTextAjuste[1]]
+        self.posText = [pos[0] + self.size[0]/2 - 5 + posTextAjuste[0], pos[1] + self.size[1]/2 - 7 + posTextAjuste[1]]
         ## Valor do texto escrito
         self.valueText = ""
         ## Offset da posição do texto em relação a posição do bloco
         self.offsetPosText = (self.pos[0] -  self.posText[0], self.pos[1] -  self.posText[1])
         ## Cria o objeto para escrever o texto
-        self.input_Text = inputText.InputText(self.posText[0], self.posText[1], 30, 30, '1', only)
+        self.input_Text = inputText.InputText(self.posText[0], self.posText[1], 15, 15, '1', only)
 
         ## Armazena se o bloco está selecionado
         self.active = False
@@ -94,39 +94,39 @@ class ObjectUse:
                 i[0].setPos(newPos, ajusteVisual)
             ## Primeiro encaixe interior do bloco Operacao
             elif i[1] == "I1-op":
-                newPos = (self.pos[0]+ 23, self.pos[1] + 13)
+                newPos = (self.pos[0]+ 11, self.pos[1] + 6)
                 i[0].setPos(newPos, ajusteVisual)
             ## Segundo encaixe interior do bloco Operacao
             elif i[1] == "I2-op":
-                newPos = (self.pos[0] + 163, self.pos[1] + 13)
+                newPos = (self.pos[0] + 81, self.pos[1] + 6)
                 i[0].setPos(newPos, ajusteVisual)
             ## Primero encaixe interior do bloco Enquanto
             elif i[1] == "I1-en":
-                newPos = (self.pos[0] + 143, self.pos[1] + 15)
+                newPos = (self.pos[0] + 71, self.pos[1] + 7)
                 i[0].setPos(newPos, ajusteVisual)
             ## Segundo encaixe interior do bloco Enquanto
             elif i[1] == "I2-en":
-                newPos = (self.pos[0] + 283, self.pos[1] + 15)
+                newPos = (self.pos[0] + 141, self.pos[1] + 7)
                 i[0].setPos(newPos, ajusteVisual)
             ## Primeiro bloco encaixado aninhado com o Enquanto
             elif i[1] == "A-en":
-                newPos = (self.pos[0] + 93, self.pos[1] + 74)
+                newPos = (self.pos[0] + 46, self.pos[1] + 37)
                 i[0].setPos(newPos, ajusteVisual)
             ## Primeiro encaixe interior do bloco Se
             elif i[1] == "I1-se":
-                newPos = (self.pos[0]+ 58, self.pos[1] + 12)
+                newPos = (self.pos[0]+ 29, self.pos[1] + 6)
                 i[0].setPos(newPos, ajusteVisual)
             ## Segundo encaixe interior do bloco Se
             elif i[1] == "I2-se":
-                newPos = (self.pos[0] + 193, self.pos[1] + 12)
+                newPos = (self.pos[0] + 94, self.pos[1] + 6)
                 i[0].setPos(newPos, ajusteVisual)
             ## Primeiro bloco encaixado aninhado com o Se
             elif i[1] == "A-se":
-                newPos = (self.pos[0] + 93, self.pos[1] + 74)
+                newPos = (self.pos[0] + 46, self.pos[1] + 37)
                 i[0].setPos(newPos, ajusteVisual)
             ## Primeiro bloco encaixado aninhado com senão
             elif i[1] == "A-senao":
-                newPos = (self.pos[0] + 93, self.pos[1] + 24)
+                newPos = (self.pos[0] + 43, self.pos[1] + 12)
                 i[0].setPos(newPos, ajusteVisual)
             
     ## Retorna a posicao

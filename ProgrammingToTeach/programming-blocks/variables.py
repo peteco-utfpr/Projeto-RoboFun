@@ -12,11 +12,11 @@ class Variables(button.Button):
         ##Os parametros a serem passados são: imagem, tamanho, posicao, quais encaixes ele ofere, quais encaixes ele recebe, se o usuário pode digitar texto
         ##quais o caracteres permitidos, se tiver texto, e o nome do objeto 
 
-        self.createVariable = ObjectThing("criarVariavel.png", [151, 63], [110, 30], [("L", "femea-normal"), ("N", "femea-normal"), ("S", "macho-normal")],
+        self.createVariable = ObjectThing("criarVariavel.png", [126, 32], [110, 30], [("L", "femea-normal"), ("N", "femea-normal"), ("S", "macho-normal")],
                                                                                      [("O", "macho-normal"), ("S", "macho-normal"), ("N", "femea-normal")], False, False, "criarVariavel")
-        self.setVariable = ObjectThing("setarVariavel.png", [188, 63], [110, 100], [("L", "femea-normal"), ("N", "femea-normal"), ("S", "macho-normal")],
+        self.setVariable = ObjectThing("setarVariavel.png", [144, 32], [110, 70], [("L", "femea-normal"), ("N", "femea-normal"), ("S", "macho-normal")],
                                                                                    [("O", "macho-normal"), ("S", "macho-normal"), ("N", "femea-normal")], True, False, "setarVariavel")
-        self.useVariable = ObjectThing("variavel.png", [75, 50], [110, 170], [("O", "macho-normal"), ("I", "macho-normal")],[("L", "femea-normal"), ("I", "femea-normal")], True, False, "variavel")
+        self.useVariable = ObjectThing("variavel.png", [38, 25], [110, 110], [("O", "macho-normal"), ("I", "macho-normal")],[("L", "femea-normal"), ("I", "femea-normal")], True, False, "variavel")
 
         ## Adiciona os itens na lista de coisas
         self.things.append(self.createVariable)

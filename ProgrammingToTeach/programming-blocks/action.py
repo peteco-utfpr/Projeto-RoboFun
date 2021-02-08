@@ -11,18 +11,20 @@ class Action(button.Button):
         ##Cada objeto é uma instancia da classe ObjectThing
         ##Os parametros a serem passados são: imagem, tamanho, posicao, quais encaixes ele ofere, quais encaixes ele recebe, se o usuário pode digitar texto
         ##quais o caracteres permitidos, se tiver texto, e o nome do objeto 
-        self.andar = ObjectThing("mover.png", [125, 63], [110, 30], [("L", "femea-normal"), ("N", "femea-normal"), ("S", "macho-normal")],
-                                                                     [("O", "macho-normal"), ("S", "macho-normal"), ("N", "femea-normal")], False, False, "mover")
-        self.girarAnti = ObjectThing("girarAnti.png", [125, 63], [110, 100],[("L", "femea-normal"), ("N", "femea-normal"), ("S", "macho-normal")],
-                                                                     [("O", "macho-normal"), ("S", "macho-normal"), ("N", "femea-normal")], False, False, "girarAnti")
-        self.girarHora = ObjectThing("girarHor.png", [125, 63], [110, 170], [("L", "femea-normal"), ("N", "femea-normal"), ("S", "macho-normal")],
-                                                                     [("O", "macho-normal"), ("S", "macho-normal"), ("N", "femea-normal")], False, False, "girarHor")
-        self.lerDistancia = ObjectThing("lerDistancia.png", [138, 50], [110, 240], [("O", "macho-normal")],[("L", "femea-normal")], False, False, "lerDitancia")
+        self.norte = ObjectThing("norte.png", [125, 32], [110, 30], [("L", "femea-normal"), ("N", "femea-normal"), ("S", "macho-normal")],
+                                                                     [("O", "macho-normal"), ("S", "macho-normal"), ("N", "femea-normal")], False, False, "norte")
+        self.sul = ObjectThing("sul.png", [125, 32], [110, 65],[("L", "femea-normal"), ("N", "femea-normal"), ("S", "macho-normal")],
+                                                                     [("O", "macho-normal"), ("S", "macho-normal"), ("N", "femea-normal")], False, False, "sul")
+        self.leste = ObjectThing("leste.png", [125, 32], [110, 100], [("L", "femea-normal"), ("N", "femea-normal"), ("S", "macho-normal")],
+                                                                     [("O", "macho-normal"), ("S", "macho-normal"), ("N", "femea-normal")], False, False, "leste")
+        
+        self.oeste = ObjectThing("oeste.png", [125, 32], [110, 135],  [("L", "femea-normal"), ("N", "femea-normal"), ("S", "macho-normal")],
+                                                                     [("O", "macho-normal"), ("S", "macho-normal"), ("N", "femea-normal")], False, False, "oeste")
         
 
         ##Adiciona o elemento na lista de coisas
-        self.things.append(self.andar)
-        self.things.append(self.girarAnti)
-        self.things.append(self.girarHora)
-        self.things.append(self.lerDistancia)
+        self.things.append(self.norte)
+        self.things.append(self.sul)
+        self.things.append(self.leste)
+        self.things.append(self.oeste)
         
