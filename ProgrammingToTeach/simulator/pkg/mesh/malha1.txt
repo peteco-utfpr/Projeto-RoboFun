@@ -1,0 +1,7 @@
+Objetivo 0,0
+Lâmpada 0,8
+
+Parede 2,2 3,3 4,4
+
+Caixa 6,1
+Cone 7,7 8,7

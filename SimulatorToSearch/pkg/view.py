@@ -80,6 +80,8 @@ class View:
             if event.type==pygame.KEYDOWN:
                 if event.key==pygame.K_RETURN:
                     self.step = "deliberate"
+                if event.key==pygame.K_s:
+                    self.board.save()
                     
             ## Verifica se foi clicado em um bloco 
             elif event.type == pygame.MOUSEBUTTONDOWN:

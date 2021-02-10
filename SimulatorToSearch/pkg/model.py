@@ -5,11 +5,12 @@ class Model:
     """Model implementa um ambiente na forma de um labirinto com paredes e com um agente.
      A indexação da posição do agente é feita sempre por um par ordenado (lin, col). Ver classe Labirinto."""
 
-    def __init__(self, rows, columns, mesh):
+    def __init__(self, rows, columns, mesh, load):
         """Construtor de modelo do ambiente físico (labirinto)
         @param rows: número de linhas do labirinto
         @param columns: número de colunas do labirinto
         @param mesh: define o tipo malha a ser usado
+        @param load: define o nome do arquivo que contém o mapa a ser usado
         """
         if rows <= 0:
             rows = 5
@@ -28,7 +29,7 @@ class Model:
         ## Cria a view
         self.view = View(self)
         ## Cria o labirinto
-        self.maze = Maze(rows,columns, self.mesh, self.view.getScreen())
+        self.maze = Maze(rows,columns, self.mesh, self.view.getScreen(), load)
         ## Seta para o view o labirinto criado
         self.view.setBoard(self.maze.getBoard())
 
@@ -112,4 +113,5 @@ class Model:
         ## Pega o bloco que deve ser executado a ação, e chama o metodo de execucao dela
         self.maze.board.listPlaces[posAction[0]][posAction[1]].doAction(action)
         return True
+
         

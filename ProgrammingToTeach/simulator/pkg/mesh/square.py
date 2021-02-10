@@ -73,6 +73,17 @@ class Square:
     ## E define isso nos itens
     def checkClickItens(self, posMouse):
         self.itemInside = self.selectItens.checkClickIten(posMouse)
+        if self.itemInside == "Robô":
+            self.agent = True
+            return self
+        elif self.itemInside == "Objetivo":
+            self.goal = True
+            return self
+        self.updateColor()
+        return False
+    
+    ## Metodo que atualiza a cor do bloco de acordo com o item
+    def updateColor(self):
         if self.itemInside == "Parede":
             self.color = (139,69,19)
         elif self.itemInside == "Cone":
@@ -82,11 +93,12 @@ class Square:
         elif self.itemInside == "Lâmpada":
             self.color = (0,0,0)
             self.actionable = True
-        elif self.itemInside == "Robô" or self.itemInside == "Objetivo":
-            return self
+        elif self.itemInside == "Robô":
+            self.agent = True
+        elif self.itemInside == "Objetivo":
+            self.goal = True
         else:
             self.color = False
-        return False
     
     ## Método que define as ações dos objetos acionáveis
     def doAction(self, action):
@@ -98,5 +110,6 @@ class Square:
             else:
                 self.color = (0,0,0)
                 self.stateAction = False
+            self.show()
         ## Para adicionar mais elementos, coloque no aqui
 

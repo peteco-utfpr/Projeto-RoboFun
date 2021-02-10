@@ -8,12 +8,13 @@ from model import Model
 from agent import Agent
 
 class MainSimulatorProgrammingBlock:
-    def __init__(self, rows = 8, columns = 8, mesh = "square"):
+    def __init__(self, rows = 8, columns = 8, mesh = "square", loadMaze = False):
          # Cria o ambiente (modelo) = Labirinto com suas paredes
         self.mazeRows = rows
         self.mazeColumns = columns
         self.mesh = mesh
-        self.model = Model(self.mazeRows, self.mazeColumns, self.mesh)
+        self.loadMaze = loadMaze
+        self.model = Model(self.mazeRows, self.mazeColumns, self.mesh, self.loadMaze)
         ##Executa a parte que o usuário clica nos lugares e define o que terá em cada um.
         ## Sai dessa parte quando apertado o ENTER
         self.buildMaze()

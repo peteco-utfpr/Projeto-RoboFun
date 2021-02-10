@@ -11,7 +11,7 @@ class Maze:
     """Maze representa um labirinto com paredes. A indexação das posições do labirinto é dada por par ordenado (linha, coluna).
     A linha inicial é zero e a linha máxima é (maxLin - 1). A coluna inicial é zero e a máxima é (maxCol - 1)."""
 
-    def __init__(self, maxRows, maxColumns, mesh = "square", screen = False):
+    def __init__(self, maxRows, maxColumns, mesh = "square", screen = False, load = False):
         """Construtor do labirinto
         @param maxRows: número de linhas do labirinto
         @param maxColumns: número de colunas do labirinto
@@ -28,7 +28,7 @@ class Maze:
         if mesh == "square":
             ## Cria uma malha com quadradaos
             ## Passa a largura e altura que deve ser preenchida por quadrados de determinado lado, a tela, e a posicao inicial para comecar
-            self.board = mapSquare.MapSquare(maxRows*50, maxColumns*50, 50, self.screen, (50,50))
+            self.board = mapSquare.MapSquare(maxRows*50, maxColumns*50, 50, self.screen, (50,50), load)
         elif mesh == "triangle":
             ## Define o tamanho dos dois lados iguais do triangulo isoceles
             side = 78
@@ -36,7 +36,7 @@ class Maze:
             angle = 0.261799
             ## Cria uma malha retangular
             ## Passa a quantidade de retangulos em X e em Y, o lado, o angulo, a rela e a posicao inicial para comecar
-            self.board = mapTriangle.MapTriangle(maxColumns, maxRows, side, angle, self.screen, (50,50))
+            self.board = mapTriangle.MapTriangle(maxColumns, maxRows, side, angle, self.screen, (50,50), load)
         else:
             self.board = False
 

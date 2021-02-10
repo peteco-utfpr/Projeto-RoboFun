@@ -1,0 +1,4 @@
+Robô 1,3
+Lâmpada 1,8
+Parede 3,4 3,5 3,6
+Objetivo 4,5

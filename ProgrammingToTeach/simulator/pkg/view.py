@@ -81,7 +81,12 @@ class View:
             if event.type==pygame.KEYDOWN:
                 if event.key==pygame.K_RETURN:
                     self.step = "deliberate"
-                    
+                    ## Atualiza a posição do agente e do objetivo
+                    self.model.setAgentPos(self.board.posAgent[0], self.board.posAgent[1])
+                    self.model.setGoalPos(self.board.posGoal[0], self.board.posGoal[1])
+                    self.draw()
+                if event.key==pygame.K_s:
+                    self.board.save()
             ## Verifica se foi clicado em um bloco 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 redraw = self.board.checkClick(pygame.mouse.get_pos())

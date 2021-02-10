@@ -1,0 +1,3 @@
+Robô 0,4
+Objetivo 1,3
+Parede 2,2 3,2

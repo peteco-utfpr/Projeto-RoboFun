@@ -64,7 +64,7 @@ class Triangle:
         elif self.color != False:
             pygame.draw.polygon(self.screen,self.color,(self.p1,self.p2,self.p3))
         elif self.goal == True:
-            pygame.draw.polygon(self.screen,(255,255,0),(self.p1,self.p2,self.p3))
+            pygame.draw.polygon(self.screen,(240,230,140),(self.p1,self.p2,self.p3))
         else:
             pygame.draw.polygon(self.screen,(255,255,255),(self.p1,self.p2,self.p3))
         ## Desenha o contorno preto
@@ -116,6 +116,17 @@ class Triangle:
     ## E define isso nos itens
     def checkClickItens(self, posMouse):
         self.itemInside = self.selectItens.checkClickIten(posMouse)
+        if self.itemInside == "Robô":
+            self.agent = True
+            return self
+        elif self.itemInside == "Objetivo":
+            self.goal = True
+            return self
+        self.updateColor()
+        return False
+    
+    ## Metodo que atualiza a cor do bloco de acordo com o item
+    def updateColor(self):
         if self.itemInside == "Parede":
             self.color = (139,69,19)
         elif self.itemInside == "Cone":
@@ -125,11 +136,13 @@ class Triangle:
         elif self.itemInside == "Lâmpada":
             self.color = (0,0,0)
             self.actionable = True
-        elif self.itemInside == "Robô" or self.itemInside == "Objetivo":
-            return self
+        elif self.itemInside == "Robô":
+            self.agent = True
+        elif self.itemInside == "Objetivo":
+            self.goal = True
         else:
             self.color = False
-        return False
+
 
     ## Método que define as ações dos objetos acionáveis
     def doAction(self, action):
@@ -141,6 +154,7 @@ class Triangle:
             else:
                 self.color = (0,0,0)
                 self.stateAction = False
+            self.show()
         ## Para adicionar mais elementos, coloque no aqui
 
 

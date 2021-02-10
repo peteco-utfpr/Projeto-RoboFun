@@ -96,6 +96,7 @@ class Agent:
         ## Se o resultado for True, significa que a acao foi completada com sucesso, e ja pode ser removida do plano
         if (result):
             del self.plan[0]
+            self.actionDo((2,1), True)
             
         return 1
 

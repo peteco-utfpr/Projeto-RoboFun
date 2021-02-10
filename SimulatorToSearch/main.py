@@ -20,10 +20,11 @@ def buildMaze(model):
 
 def main():
     # Cria o ambiente (modelo) = Labirinto com suas paredes
-    mazeRows = 8
-    mazeColumns = 8
+    mazeRows = 9
+    mazeColumns = 9
     mesh = "triangle"
-    model = Model(mazeRows, mazeColumns, mesh)
+    loadMaze = "2021210012"
+    model = Model(mazeRows, mazeColumns, mesh, loadMaze)
     ##Executa a parte que o usuário clica nos lugares e define o que terá em cada um.
     ## Sai dessa parte quando apertado o ENTER
     buildMaze(model)

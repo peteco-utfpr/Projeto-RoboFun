@@ -23,7 +23,7 @@ class Main:
         self.altura = 550
 
         ## Define até onde vai a area para a programação
-        self.larguraProgramming = 700
+        self.larguraProgramming = 650
 
         self.window = pygame.display.set_mode((self.largura, self.altura)) ##Cria uma tela.. X e Y
         pygame.display.set_caption("Block Program")##Nomeia a Janela
@@ -46,7 +46,8 @@ class Main:
         rows = 8
         columns = 8
         mesh = "triangle"
-        self.executionSimulator = MainSimulatorProgrammingBlock(rows, columns, mesh)
+        loadMaze = "2021210026"
+        self.executionSimulator = MainSimulatorProgrammingBlock(rows, columns, mesh, loadMaze)
         
         
 
