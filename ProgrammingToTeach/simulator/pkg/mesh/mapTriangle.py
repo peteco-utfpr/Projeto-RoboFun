@@ -90,13 +90,18 @@ class MapTriangle:
             ## Cria um objeto para armazenar cada informação
             things = {}
             ## Le o arquivo
-            arq = open(os.path.join("simulator", "pkg","mesh", "loads", self.load+".txt"),"r")
-            for line in arq:
-                ## O formato de cada linha é:
-                ## Nome x,y x,y x,y
-                values = line.split(" ")
-                ## O primeiro dado é o nome do objeto, seguido por varias posicoes 
-                things[values.pop(0)] = values
+            with open(
+                os.path.join(
+                    "simulator", "pkg","mesh", "loads", self.load+".txt"),
+                    "r",
+                    encoding='latin-1'
+                ) as arq:    
+                for line in arq:
+                    ## O formato de cada linha é:
+                    ## Nome x,y x,y x,y
+                    values = line.split(" ")
+                    ## O primeiro dado é o nome do objeto, seguido por varias posicoes 
+                    things[values.pop(0)] = values
 
             ## Percorre os elementos que foram definidos
             for i in things:
