@@ -1,4 +1,4 @@
-__pycache__/
+*__pycache__/*
 ProgrammingToTeach/simulator/pkg/mesh/__pycache__/triangle.cpython-38.pyc
 ProgrammingToTeach/simulator/pkg/mesh/__pycache__/square.cpython-38.pyc
 ProgrammingToTeach/simulator/pkg/mesh/__pycache__/mapTriangle.cpython-38.pyc
